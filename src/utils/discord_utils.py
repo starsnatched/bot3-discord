@@ -66,7 +66,7 @@ class DiscordUtils:
         
         # Basic tools
         if output.tool_args.tool_type == "send_message":
-            await message.channel.send(f"{output.tool_args.content}")
+            await message.reply(output.tool_args.content, mention_author=False)
             return
         
         if output.tool_args.tool_type == "send_voice_message":

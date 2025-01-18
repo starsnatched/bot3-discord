@@ -12,12 +12,13 @@ class Bot(commands.Bot):
     def __init__(self) -> None:
         self._setup_logging()
         self.server_name = "Euphoria"
+        self.bot_name = "bot3"
         
         super().__init__(
             command_prefix=':',
             intents=discord.Intents.all(),
             case_insensitive=True,
-            description="bot3 - An experimental deep thinker."
+            description=f"{self.bot_name} - An experimental deep thinker."
         )
 
     def _setup_logging(self) -> None:

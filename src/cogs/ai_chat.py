@@ -7,7 +7,6 @@ from utils.models import ReasoningModel
 from services.database import DatabaseService
 from utils.get_prompt import generate_system_prompt
 from typing import Optional, Dict
-from decouple import config
 import json
 import logging
 import asyncio
@@ -111,11 +110,11 @@ class AI(commands.Cog):
                 self.logger.info(f"Task cancelled for channel {channel_id}")
             except Exception as e:
                 self.logger.error(f"Error in handle_message: {e}", exc_info=True)
-                await message.channel.send("-# An error occurred while processing your message.")
+                await message.reply("-# An error occurred while processing your message.", mention_author=False)
 
         except Exception as e:
             self.logger.error(f"Error in handle_message: {e}", exc_info=True)
-            await message.channel.send("-# An error occurred while processing your message.")
+            await message.reply("-# An error occurred while processing your message.", mention_author=False)
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
