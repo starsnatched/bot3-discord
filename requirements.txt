@@ -1,0 +1,11 @@
+discord
+openai
+python-decouple
+chromadb
+torch
+scipy
+peewee
+munch
+pynacl
+transformers
+phonemizer
