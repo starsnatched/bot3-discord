@@ -1,5 +1,4 @@
 import discord
-from discord import app_commands
 from discord.ext import commands
 from services.infer import OpenAI
 from utils.discord_utils import DiscordUtils
