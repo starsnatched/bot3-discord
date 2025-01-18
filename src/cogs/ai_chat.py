@@ -85,7 +85,7 @@ class AI(commands.Cog):
                             message.channel.id,
                             "assistant", 
                             json.dumps(response.dict(), indent=4),
-                            message.attachments[0].url if message.attachments else None
+                            None
                         )
                             
                         if (response.tool_args.tool_type == "send_message" and 
@@ -93,7 +93,7 @@ class AI(commands.Cog):
                             break
                         else:
                             if return_json:
-                                await self.db.add_message(message.channel.id, "user", return_json, message.attachments[0].url if message.attachments else None)
+                                await self.db.add_message(message.channel.id, "user", return_json, None)
                             else:
                                 break
                 finally:
@@ -125,6 +125,9 @@ class AI(commands.Cog):
             return
         if not message.content:
             message.content = "[EMPTY MESSAGE]"
+        if message.attachments and message.attachments[0].size > 20_000_000:
+            await message.reply("-# File size exceeds 20MB. Please upload a smaller file.", mention_author=False)
+            return
         
         await self.handle_message(message)
         
