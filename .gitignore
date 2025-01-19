@@ -29,6 +29,7 @@ MANIFEST
 *.db
 db/
 .vscode/
+.DS_Store
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
