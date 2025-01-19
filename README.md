@@ -32,7 +32,7 @@ OLLAMA_EMBEDDING_MODEL=nomic-embed-text
 OLLAMA_NUM_CTX=32000
 
 # Misc
-BACKEND_TYPE=ollama
+BACKEND_TYPE=openai
 ```
 
 Have fun!
@@ -82,3 +82,31 @@ It can currently do:
 - Chain multiple tools/messages.
 - Send a voice message.
 - Roll a dice!
+
+# [Ollama](https://ollama.com) Usage
+You can also use this with [Ollama](https://ollama.com), if you wish to run everything locally.
+
+After installing Ollama, run:
+```
+ollama pull huihui_ai/smallthinker-abliterated
+ollama pull nomic-embed-text
+```
+
+The model `huihui_ai/smallthinker-abliterated (1.9GB)` can be ran on any device with ~2GB of available RAM/VRAM. It runs really fast on a CPU. The LLM performs surprisingly well for its size, and is highly reliable.
+
+Then, change `.env` as such:
+
+```
+OLLAMA_HOST=http://localhost:11434
+OLLAMA_MODEL=huihui_ai/smallthinker-abliterated
+OLLAMA_EMBEDDING_MODEL=nomic-embed-text
+OLLAMA_NUM_CTX=32000
+
+BACKEND_TYPE=ollama
+```
+
+Have fun!
+
+```
+python src/bot.py
+```
