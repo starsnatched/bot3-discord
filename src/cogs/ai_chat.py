@@ -145,7 +145,7 @@ class AI(commands.Cog):
         await i.response.defer()
         
         if i.user.guild_permissions.manage_messages or i.user.id == self.bot.owner_id:
-            if i.channel_id in self.db.get_enabled_channels():
+            if i.channel_id in await self.db.get_enabled_channels():
                 await self.db.remove_enabled_channel(i.channel_id)
                 await i.followup.send("-# AI disabled in this channel.")
                 
@@ -162,7 +162,7 @@ class AI(commands.Cog):
         await i.response.defer()
         
         if i.user.guild_permissions.manage_messages or i.user.id == self.bot.owner_id:
-            if i.channel_id in self.db.get_disabled_channels():
+            if i.channel_id in await self.db.get_disabled_channels():
                 await i.followup.send("-# AI is already disabled in this channel.")
                 return
             
@@ -178,7 +178,7 @@ class AI(commands.Cog):
         await i.response.defer()
         
         if i.user.guild_permissions.manage_messages or i.user.id == self.bot.owner_id:
-            if i.channel_id in self.db.get_enabled_channels():
+            if i.channel_id in await self.db.get_enabled_channels():
                 await i.followup.send("-# AI is already enabled in this channel.")
                 return
             
@@ -193,11 +193,11 @@ class AI(commands.Cog):
     async def status(self, i: I):
         await i.response.defer()
         
-        if i.channel_id in self.db.get_enabled_channels() and i.channel_id not in self.db.get_disabled_channels():
+        if i.channel_id in await self.db.get_enabled_channels() and i.channel_id not in await self.db.get_disabled_channels():
             await i.followup.send("-# AI is currently enabled in this channel.")
-        elif i.channel_id not in self.db.get_enabled_channels() and i.channel_id not in self.db.get_disabled_channels():
+        elif i.channel_id not in await self.db.get_enabled_channels() and i.channel_id not in await self.db.get_disabled_channels():
             await i.followup.send("-# AI is currently set to respond to pings.")
-        elif i.channel_id in self.db.get_disabled_channels():
+        elif i.channel_id in await self.db.get_disabled_channels():
             await i.followup.send("-# AI is currently disabled in this channel.")
         else:
             await i.followup.send("-# An unknown logic occured.")
@@ -208,7 +208,7 @@ class AI(commands.Cog):
             return
         if message.guild is None:
             return
-        if message.channel.id in self.db.get_disabled_channels():
+        if message.channel.id in await self.db.get_disabled_channels():
             return
         if not self.bot.user.mentioned_in(message) and message.channel.id not in await self.db.get_enabled_channels():
             return
