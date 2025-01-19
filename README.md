@@ -16,11 +16,23 @@ pip install -r requirements.txt
 Configure .env:
 
 ```
+# Discord
 DISCORD_TOKEN=
+DEV_ID=YOUR_DISCORD_USER_ID
+
+# OpenAI
 OPENAI_API_KEY=sk-...
 OPENAI_MODEL=gpt-4o-mini
 OPENAI_EMBEDDING_MODEL=text-embedding-3-small
-DEV_ID=YOUR_DISCORD_USER_ID
+
+# Ollama
+OLLAMA_HOST=http://localhost:11434
+OLLAMA_MODEL=smallthinker
+OLLAMA_EMBEDDING_MODEL=nomic-embed-text
+OLLAMA_NUM_CTX=32000
+
+# Misc
+BACKEND_TYPE=ollama
 ```
 
 Have fun!
