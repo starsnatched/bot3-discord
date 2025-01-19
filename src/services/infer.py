@@ -1,5 +1,6 @@
 from openai import AsyncOpenAI
 import chromadb
+from chromadb.config import Settings
 import uuid
 from typing import *
 from decouple import config
@@ -10,7 +11,7 @@ from utils.get_prompt import generate_system_prompt
 class OpenAI:
     def __init__(self) -> None:
         self.client = AsyncOpenAI(api_key=config('OPENAI_API_KEY'))
-        self.chroma_client = chromadb.Client()
+        self.chroma_client = chromadb.PersistentClient(path="./db", settings=Settings(anonymized_telemetry=False))
         self.collection = self.chroma_client.get_or_create_collection(name="memory")
         
     async def retrieve_memory(self, query: str) -> str:

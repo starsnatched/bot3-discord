@@ -14,7 +14,7 @@
     "upsample_initial_channel": 512
   },
   "dim_in": 64,
-  "dropout": 0.2,
+  "dropout": 0,
   "hidden_dim": 512,
   "max_conv_dim": 512,
   "max_dur": 50,

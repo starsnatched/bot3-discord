@@ -1,4 +1,6 @@
 import discord
+from discord import Interaction as I
+from discord import app_commands
 from discord.ext import commands
 from services.infer import OpenAI
 from utils.discord_utils import DiscordUtils
@@ -115,6 +117,18 @@ class AI(commands.Cog):
             self.logger.error(f"Error in handle_message: {e}", exc_info=True)
             await message.reply("-# An error occurred while processing your message.", mention_author=False)
 
+    @app_commands.command(description="Clears the chat history.")
+    async def reset(self, i: I):
+        await i.response.defer()
+        
+        if i.user.guild_permissions.manage_messages or i.user.id == self.bot.owner_id:
+            await self.db.clear_channel_history(i.channel_id)
+            
+            await i.followup.send("-# Channel history cleared.")
+            
+        else:
+            await i.followup.send("-# You do not have permission to use this command!")
+    
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if message.author.bot:
@@ -127,6 +141,9 @@ class AI(commands.Cog):
             message.content = "[EMPTY MESSAGE]"
         if message.attachments and message.attachments[0].size > 20_000_000:
             await message.reply("-# File size exceeds 20MB. Please upload a smaller file.", mention_author=False)
+            return
+        if message.attachments and "image/" not in message.attachments[0].content_type:
+            await message.reply("-# Only image files are supported.", mention_author=False)
             return
         
         await self.handle_message(message)

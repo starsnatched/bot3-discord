@@ -14,6 +14,7 @@ class Bot(commands.Bot):
         self._setup_logging()
         self.server_name = "Euphoria"
         self.bot_name = "bot3"
+        self.owner_id = config('DEV_ID', cast=int)
         
         super().__init__(
             command_prefix=':',
@@ -24,12 +25,12 @@ class Bot(commands.Bot):
 
     def _setup_logging(self) -> None:
         logging.basicConfig(
-            level=logging.DEBUG,
+            level=logging.INFO,
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
         )
         
-        self.logger = logging.getLogger('Arlecchino')
-        coloredlogs.install(level='DEBUG', logger=self.logger)
+        self.logger = logging.getLogger(__name__)
+        coloredlogs.install(level='INFO', logger=self.logger)
 
     async def setup_hook(self) -> None:
         await self._load_extensions()

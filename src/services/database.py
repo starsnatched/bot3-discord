@@ -80,7 +80,6 @@ class DatabaseService:
             raise
 
     async def clear_channel_history(self, channel_id: int) -> None:
-        """Clear all messages for a specific channel."""
         try:
             query = Message.delete().where(Message.channel_id == channel_id)
             query.execute()
