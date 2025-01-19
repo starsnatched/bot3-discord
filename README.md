@@ -76,6 +76,7 @@ You only need to make it return the JSON string back, so the `ai_chat` cog can h
 
 # Features
 It can currently do:
+- Perform an o1-like reasoning before taking an action, resulting in much higher quality of outputs.
 - Store/retrieve information in its long-term memory.
 - Send a text message.
 - Chain multiple tools/messages.
