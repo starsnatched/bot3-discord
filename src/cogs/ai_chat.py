@@ -84,18 +84,18 @@ class AI(commands.Cog):
                         await self.db.add_message(
                             message.channel.id,
                             "assistant", 
-                            json.dumps(response.dict(), indent=4),
+                            json.dumps(response.model_dump(), indent=4),
                             None
                         )
                             
-                        if (response.tool_args.tool_type == "send_message" and 
-                            not response.tool_args.call_another_tool):
+                        if response.tool_args.tool_type == "send_message" and not response.tool_args.call_another_tool:
                             break
+
+                        if return_json:
+                            await self.db.add_message(message.channel.id, "user", return_json, None)
                         else:
-                            if return_json:
-                                await self.db.add_message(message.channel.id, "user", return_json, None)
-                            else:
-                                break
+                            break
+                        
                 finally:
                     if channel_id in self.ongoing_tasks:
                         del self.ongoing_tasks[channel_id]

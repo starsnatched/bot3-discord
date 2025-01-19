@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 import logging
 from pathlib import Path
+import coloredlogs
 
 import discord
 from discord.ext import commands
@@ -23,10 +24,12 @@ class Bot(commands.Bot):
 
     def _setup_logging(self) -> None:
         logging.basicConfig(
-            level=logging.INFO,
+            level=logging.DEBUG,
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
         )
+        
         self.logger = logging.getLogger('Arlecchino')
+        coloredlogs.install(level='DEBUG', logger=self.logger)
 
     async def setup_hook(self) -> None:
         await self._load_extensions()

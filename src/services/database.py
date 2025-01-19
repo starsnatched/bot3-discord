@@ -30,12 +30,10 @@ class DatabaseService:
             os.makedirs("./db")
 
     async def init_db(self):
-        """Initialize database and create necessary tables."""
         if not Message.table_exists():
             db.create_tables([Message])
 
     async def add_message(self, channel_id: int, role: str, content: str, image_url: Optional[str]) -> None:
-        """Add a message to the database."""
         try:
             Message.create(
                 channel_id=channel_id,
@@ -48,7 +46,6 @@ class DatabaseService:
             raise
 
     async def get_channel_history(self, channel_id: int) -> List[Dict[str, str]]:
-        """Retrieve chat history for a specific channel."""
         try:
             messages = (Message
                     .select()
