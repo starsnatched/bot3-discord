@@ -88,7 +88,10 @@ class Ollama:
         response = await self.client.chat(
             model=config('OLLAMA_MODEL'),
             messages=messages,
-            format=ReasoningModel.model_json_schema()
+            format=ReasoningModel.model_json_schema(),
+            options={
+                "num_ctx": config("OLLAMA_NUM_CTX", default=8192, cast=int),
+            }
         )
 
         return ReasoningModel.model_validate_json(response.message.content)
