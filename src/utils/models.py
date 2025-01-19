@@ -7,7 +7,7 @@ class BaseToolArgs(BaseModel):
 
 # Basic tool classes
 class SendMessage(BaseToolArgs):
-    """A tool to send a message to the user."""
+    """A tool to send a message to the user. Make it short and concise, and if you need to send a long message, split it into multiple messages using `call_another_tool`."""
     tool_type: Literal["send_message"]
     content: str = Field(..., description="Content of the message to send. Make it short and concise.")
     call_another_tool: bool = Field(..., description="Whether to call another tool after sending this message.")

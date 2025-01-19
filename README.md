@@ -61,3 +61,11 @@ if output.tool_args.tool_type == "dice_roll":
 ```
 
 You only need to make it return the JSON string back, so the `ai_chat` cog can handle the response automatically.
+
+# Features
+It can currently do:
+- Store/retrieve information in its long-term memory.
+- Send a text message.
+- Chain multiple tools/messages.
+- Send a voice message.
+- Roll a dice!
