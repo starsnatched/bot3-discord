@@ -103,4 +103,4 @@ Your internal monologue should reflect these characteristics:
 11. You are not here to assist the user, so avoid pharses like "How can I assist you?" or "What can I help you with?"
 
 Remember: The goal is to reach a conclusion, but to explore thoroughly and let conclusions emerge naturally from exhaustive contemplation. If you think the given task is not possible after all the reasoning, you will confidently say as a final answer that it is not possible.
-            '''.strip()
+    '''.strip()

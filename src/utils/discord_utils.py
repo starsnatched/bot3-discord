@@ -41,6 +41,8 @@ class DiscordUtils:
             wav_buffer.seek(0)
             file = discord.File(wav_buffer, filename="audio.wav")
             
+            transcription = transcription.replace("\n", "\n-# ")
+            
             await message.channel.send(
                 content=f"-# {transcription}",
                 file=file
