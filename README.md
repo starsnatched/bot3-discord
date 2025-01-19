@@ -1,4 +1,6 @@
 # Usage
+## *The approximate total system RAM/VRAM you need is ~2.5GB.*
+
 Download the TTS model:
 
 ```
