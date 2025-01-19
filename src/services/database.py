@@ -15,6 +15,18 @@ class Message(Model):
 
     class Meta:
         database = db
+        
+class EnabledChannels(Model):
+    channel_id = IntegerField()
+    
+    class Meta:
+        database = db
+        
+class DisabledChannels(Model):
+    channel_id = IntegerField()
+    
+    class Meta:
+        database = db
 
 class DatabaseService:
     def __init__(self, db_path: str = "./db/database.db"):
@@ -32,6 +44,56 @@ class DatabaseService:
     async def init_db(self):
         if not Message.table_exists():
             db.create_tables([Message])
+        if not EnabledChannels.table_exists():
+            db.create_tables([EnabledChannels])
+        if not DisabledChannels.table_exists():
+            db.create_tables([DisabledChannels])
+            
+    async def get_disabled_channels(self) -> List[int]:
+        try:
+            channels = DisabledChannels.select()
+            return [channel.channel_id for channel in channels]
+        except Exception as e:
+            self.logger.error(f"Error retrieving disabled channels: {e}")
+            raise
+        
+    async def add_disabled_channel(self, channel_id: int) -> None:
+        try:
+            DisabledChannels.create(channel_id=channel_id)
+        except Exception as e:
+            self.logger.error(f"Error adding disabled channel to database: {e}")
+            raise
+        
+    async def remove_disabled_channel(self, channel_id: int) -> None:
+        try:
+            query = DisabledChannels.delete().where(DisabledChannels.channel_id == channel_id)
+            query.execute()
+        except Exception as e:
+            self.logger.error(f"Error removing disabled channel from database: {e}")
+            raise
+            
+    async def get_enabled_channels(self) -> List[int]:
+        try:
+            channels = EnabledChannels.select()
+            return [channel.channel_id for channel in channels]
+        except Exception as e:
+            self.logger.error(f"Error retrieving enabled channels: {e}")
+            raise
+        
+    async def add_enabled_channel(self, channel_id: int) -> None:
+        try:
+            EnabledChannels.create(channel_id=channel_id)
+        except Exception as e:
+            self.logger.error(f"Error adding enabled channel to database: {e}")
+            raise
+        
+    async def remove_enabled_channel(self, channel_id: int) -> None:
+        try:
+            query = EnabledChannels.delete().where(EnabledChannels.channel_id == channel_id)
+            query.execute()
+        except Exception as e:
+            self.logger.error(f"Error removing enabled channel from database: {e}")
+            raise
 
     async def add_message(self, channel_id: int, role: str, content: str, image_url: Optional[str]) -> None:
         try:

@@ -139,6 +139,68 @@ class AI(commands.Cog):
             
         else:
             await i.followup.send("-# You do not have permission to use this command!")
+            
+    @app_commands.command(description="Toggles the AI on or off in the current channel.")
+    async def toggle(self, i: I):
+        await i.response.defer()
+        
+        if i.user.guild_permissions.manage_messages or i.user.id == self.bot.owner_id:
+            if i.channel_id in self.db.get_enabled_channels():
+                await self.db.remove_enabled_channel(i.channel_id)
+                await i.followup.send("-# AI disabled in this channel.")
+                
+            else:
+                await self.db.remove_disabled_channel(i.channel_id)
+                await self.db.add_enabled_channel(i.channel_id)
+                await i.followup.send("-# AI enabled in this channel.")
+                
+        else:
+            await i.followup.send("-# You do not have permission to use this command!")
+            
+    @app_commands.command(description="Disables the AI in the current channel.")
+    async def disable(self, i: I):
+        await i.response.defer()
+        
+        if i.user.guild_permissions.manage_messages or i.user.id == self.bot.owner_id:
+            if i.channel_id in self.db.get_disabled_channels():
+                await i.followup.send("-# AI is already disabled in this channel.")
+                return
+            
+            await self.db.remove_enabled_channel(i.channel_id)
+            await self.db.add_disabled_channel(i.channel_id)
+            await i.followup.send("-# AI disabled in this channel.")
+            
+        else:
+            await i.followup.send("-# You do not have permission to use this command!")
+            
+    @app_commands.command(description="Enables the AI in the current channel.")
+    async def enable(self, i: I):
+        await i.response.defer()
+        
+        if i.user.guild_permissions.manage_messages or i.user.id == self.bot.owner_id:
+            if i.channel_id in self.db.get_enabled_channels():
+                await i.followup.send("-# AI is already enabled in this channel.")
+                return
+            
+            await self.db.remove_disabled_channel(i.channel_id)
+            await self.db.add_enabled_channel(i.channel_id)
+            await i.followup.send("-# AI enabled in this channel.")
+            
+        else:
+            await i.followup.send("-# You do not have permission to use this command!")
+            
+    @app_commands.command(description="Displays the current AI status in the channel.")
+    async def status(self, i: I):
+        await i.response.defer()
+        
+        if i.channel_id in self.db.get_enabled_channels() and i.channel_id not in self.db.get_disabled_channels():
+            await i.followup.send("-# AI is currently enabled in this channel.")
+        elif i.channel_id not in self.db.get_enabled_channels() and i.channel_id not in self.db.get_disabled_channels():
+            await i.followup.send("-# AI is currently set to respond to pings.")
+        elif i.channel_id in self.db.get_disabled_channels():
+            await i.followup.send("-# AI is currently disabled in this channel.")
+        else:
+            await i.followup.send("-# An unknown logic occured.")
     
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -146,7 +208,9 @@ class AI(commands.Cog):
             return
         if message.guild is None:
             return
-        if not self.bot.user.mentioned_in(message):
+        if message.channel.id in self.db.get_disabled_channels():
+            return
+        if not self.bot.user.mentioned_in(message) and message.channel.id not in await self.db.get_enabled_channels():
             return
         if not message.content:
             message.content = "[EMPTY MESSAGE]"

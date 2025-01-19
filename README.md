@@ -40,7 +40,30 @@ Have fun!
 python src/bot.py
 ```
 
-You need to ping the bot in your guild for it to respond.
+# Commands
+Toggle AI chatbot in the channel:
+
+```
+/toggle
+```
+
+However, the bot will respond when it's pinged, even if it's toggled off. To prevent that, use:
+
+```
+/disable #channel_name
+```
+
+This will make the bot completely ignore the specified channel. To re-enable:
+
+```
+/enable
+```
+
+To see if the bot is enabled in the channel:
+
+```
+/status
+```
 
 # Adding More Tools
 Within `src/utils/models.py`, add a `BaseToolArgs` class as such:
@@ -93,6 +116,8 @@ ollama pull nomic-embed-text
 ```
 
 The model `huihui_ai/smallthinker-abliterated (1.9GB)` can be ran on any device with ~2GB of available RAM/VRAM. It runs really fast on a CPU. The LLM performs surprisingly well for its size, and is highly reliable.
+
+It's also uncensored, unlike the OpenAI's GPT, and no data is collected to train the model, so it's a great piece of mind.
 
 Then, change `.env` as such:
 

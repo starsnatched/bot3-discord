@@ -41,11 +41,13 @@ class DiscordUtils:
             wav_buffer.seek(0)
             file = discord.File(wav_buffer, filename="audio.wav")
             
+            transcription = "-# " + transcription
             transcription = transcription.replace("\n", "\n-# ")
             
-            await message.channel.send(
+            await message.reply(
                 content=f"-# {transcription}",
-                file=file
+                file=file,
+                mention_author=False
             )
                 
     @staticmethod
@@ -66,6 +68,7 @@ class DiscordUtils:
         }, indent=4)
         
     async def handle_tools(self, message: discord.Message, output: ReasoningModel) -> Optional[str]:
+        output.reasoning = "-# " + output.reasoning
         output.reasoning = output.reasoning.replace('\n', '\n-# ')
         if len(output.reasoning) > 2000:
             output.reasoning = output.reasoning[:1996] + " ..."
