@@ -12,6 +12,7 @@ from decouple import config
 class Bot(commands.Bot):
     def __init__(self) -> None:
         self._setup_logging()
+        self.backend = config('BACKEND_TYPE', default='openai')
         self.server_name = "Euphoria"
         self.bot_name = "bot3"
         self.owner_id = config('DEV_ID', cast=int)

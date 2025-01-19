@@ -1,5 +1,16 @@
-from phonemizer.backend.espeak.wrapper import EspeakWrapper
-EspeakWrapper.set_library('/opt/homebrew/Cellar/espeak-ng/1.52.0/lib/libespeak-ng.1.dylib')
+import platform
+if platform.system() == "Windows":
+    import os
+    os.environ["PHONEMIZER_ESPEAK_LIBRARY"] = r"C:\Program Files\eSpeak NG\libespeak-ng.dll"
+    os.environ["PHONEMIZER_ESPEAK_PATH"] = r"C:\Program Files\eSpeak NG\espeak-ng.exe"
+elif platform.system() == "Darwin":
+    from phonemizer.backend.espeak.wrapper import EspeakWrapper
+    EspeakWrapper.set_library('/opt/homebrew/Cellar/espeak-ng/1.52.0/lib/libespeak-ng.1.dylib')
+elif platform.system() == "Linux":
+    from phonemizer.backend.espeak.wrapper import EspeakWrapper
+    EspeakWrapper.set_library('/usr/lib/x86_64-linux-gnu/libespeak.so.1')
+else:
+    raise NotImplementedError("Unsupported platform")
 import phonemizer
 import re
 import torch

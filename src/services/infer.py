@@ -1,12 +1,14 @@
 from openai import AsyncOpenAI
+from ollama import AsyncClient
+
 import chromadb
 from chromadb.config import Settings
+
 import uuid
 from typing import *
 from decouple import config
 
 from utils.models import ReasoningModel
-from utils.get_prompt import generate_system_prompt
 
 class OpenAI:
     def __init__(self) -> None:
@@ -49,3 +51,44 @@ class OpenAI:
         )
         
         return response.choices[0].message.parsed
+    
+class Ollama:
+    def __init__(self) -> None:
+        self.client = AsyncClient(host=config('OLLAMA_HOST'))
+        self.chroma_client = chromadb.PersistentClient(path="./db", settings=Settings(anonymized_telemetry=False))
+        self.collection = self.chroma_client.get_or_create_collection(name="memory")
+        
+    async def retrieve_memory(self, query: str) -> str:
+        response = await self.client.embeddings(
+            model=config('OLLAMA_EMBEDDING_MODEL'),
+            prompt=query
+        )
+        results = self.collection.query(
+            query_embeddings=[response.embedding],
+            n_results=1
+        )
+        if not results['documents'] or not results['documents'][0]:
+            return "Memory not found."
+        return results['documents'][0][0]['answer']
+        
+    async def store_memory(self, memory: str) -> str:
+        response = await self.client.embeddings(
+            model=config('OLLAMA_EMBEDDING_MODEL'),
+            prompt=memory
+        )
+        self.collection.add(
+            ids=[uuid.uuid4().hex],
+            embeddings=[response.embedding],
+            documents=[memory],
+        )
+        
+        return "Memory stored successfully."
+    
+    async def generate_response(self, messages: List[Dict[str, str]]) -> ReasoningModel:
+        response = await self.client.chat(
+            model=config('OLLAMA_MODEL'),
+            messages=messages,
+            format=ReasoningModel.model_json_schema()
+        )
+
+        return ReasoningModel.model_validate_json(response.message.content)

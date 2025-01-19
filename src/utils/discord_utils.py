@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from utils.models import ReasoningModel
-from services.infer import OpenAI
+from services.infer import OpenAI, Ollama
 from utils.voice_utils import VoiceUtils
 from typing import Any, Optional, Union
 import json
@@ -13,13 +13,20 @@ import torch
 import logging
 
 class DiscordUtils:
-    def __init__(self, bot: commands.Bot):
-        self.client = OpenAI()
-            
+    def __init__(self, bot: commands.Bot):      
         self.voice_client = VoiceUtils()
             
         self.logger = logging.getLogger(__name__)
         self.bot = bot
+        self._get_client()
+        
+    def _get_client(self):
+        if self.bot.backend == 'openai':
+            self.client = OpenAI()
+        elif self.bot.backend == 'ollama':
+            self.client = Ollama()
+        else:
+            raise ValueError("Invalid backend type.")
             
     async def upload_audio(self, message: discord.Message, audio: Union[torch.Tensor, np.ndarray], transcription: str) -> None:
         if isinstance(audio, torch.Tensor):

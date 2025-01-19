@@ -2,12 +2,15 @@ import discord
 from discord import Interaction as I
 from discord import app_commands
 from discord.ext import commands
-from services.infer import OpenAI
+
+from services.infer import OpenAI, Ollama
 from utils.discord_utils import DiscordUtils
 from utils.models import ReasoningModel
 from services.database import DatabaseService
 from utils.get_prompt import generate_system_prompt
+
 from typing import Optional, Dict
+from decouple import config
 import json
 import logging
 import asyncio
@@ -15,11 +18,19 @@ import asyncio
 class AI(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.client = OpenAI()
         self.dc_utils = DiscordUtils(bot=bot)
         self.db = DatabaseService()
         self.logger = logging.getLogger(__name__)
         self.ongoing_tasks: Dict[int, asyncio.Task] = {}
+        self._get_client()
+        
+    def _get_client(self):
+        if self.bot.backend == 'openai':
+            self.client = OpenAI()
+        elif self.bot.backend == 'ollama':
+            self.client = Ollama()
+        else:
+            raise ValueError("Invalid backend type.")
 
     async def cog_load(self):
         await self.db.init_db()

@@ -1,7 +1,15 @@
 import discord
 from discord.ext import commands
 
+import chromadb
+from chromadb import Settings
+
 from utils.tools import get_tool_info
+
+def get_memory_count() -> int:
+    collection = chromadb.PersistentClient(path="./db", settings=Settings(anonymized_telemetry=False)).get_or_create_collection(name="memory")
+    collection_items = collection.get()
+    return len(collection_items['documents'])
 
 def generate_system_prompt(bot: commands.Bot, channel: discord.TextChannel) -> str:
     return f'''
@@ -56,6 +64,9 @@ Your responses must follow this exact structure given below. Make sure to always
 
 ## Tool List
 {get_tool_info()}
+
+## Number of Items in Memory
+{get_memory_count()}
 
 ## Style Guidelines
 
