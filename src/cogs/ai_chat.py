@@ -214,11 +214,14 @@ class AI(commands.GroupCog, name="ai"):
         tool_list = []
         for tool in tools:
             if tool.startswith("TOOL_TYPE: "):
-                tool_list.append(tool.replace("TOOL_TYPE: ", "").replace("'", "").strip())
+                tool_list.append(tool.replace("TOOL_TYPE: ", "").replace("'", "").replace("_", " ").strip())
         
         tools = "- " + "\n- ".join(tool_list)
         if len(tools) > 2000:
-            tools = tools[:1997] + "..."
+            if tools.strip().endswith("-"):
+                tools = tools[:1997] + "..."
+            else:
+                tools = tools[:1997].strip() + "..."
         
         await i.followup.send(tools)
         
