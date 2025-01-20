@@ -28,6 +28,12 @@ class DisabledChannels(Model):
     
     class Meta:
         database = db
+        
+class DisabledTools(Model):
+    tool_type = CharField()
+    
+    class Meta:
+        database = db
 
 class DatabaseService:
     def __init__(self, db_path: str = "./db/database.db"):
@@ -49,6 +55,31 @@ class DatabaseService:
             db.create_tables([EnabledChannels])
         if not DisabledChannels.table_exists():
             db.create_tables([DisabledChannels])
+        if not DisabledTools.table_exists():
+            db.create_tables([DisabledTools])
+            
+    async def get_disabled_tools(self) -> List[str]:
+        try:
+            tools = DisabledTools.select()
+            return [tool.tool_type for tool in tools]
+        except Exception as e:
+            self.logger.error(f"Error retrieving disabled tools: {e}")
+            raise
+        
+    async def remove_disabled_tool(self, tool_type: str) -> None:
+        try:
+            query = DisabledTools.delete().where(DisabledTools.tool_type == tool_type)
+            query.execute()
+        except Exception as e:
+            self.logger.error(f"Error removing disabled tool from database: {e}")
+            raise
+        
+    async def add_disabled_tool(self, tool_type: str) -> None:
+        try:
+            DisabledTools.create(tool_type=tool_type)
+        except Exception as e:
+            self.logger.error(f"Error adding disabled tool to database: {e}")
+            raise
             
     async def get_disabled_channels(self) -> List[int]:
         try:

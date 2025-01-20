@@ -4,6 +4,7 @@ from discord.ext import commands
 from utils.voice_utils import VoiceUtils
 from utils.models import ReasoningModel
 from services.infer import OpenAI, Ollama
+from services.database import DatabaseService
 
 from typing import Any, Optional, Union
 import json
@@ -17,6 +18,7 @@ import logging
 class DiscordUtils:
     def __init__(self, bot: commands.Bot):      
         self.voice_client = VoiceUtils()
+        self.db = DatabaseService()
             
         self.logger = logging.getLogger(__name__)
         self.bot = bot
@@ -77,6 +79,9 @@ class DiscordUtils:
             
         if not output.tool_args:
             return
+        
+        if output.tool_args.tool_type in await self.db.get_disabled_tools():
+            return self.create_error_json(output.tool_args.tool_type, Exception("Tool is disabled."))
         
         # Basic tools
         if output.tool_args.tool_type == "send_message":

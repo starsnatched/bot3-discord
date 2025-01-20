@@ -208,13 +208,39 @@ class AI(commands.GroupCog, name="ai"):
     async def tools(self, i: I):
         await i.response.defer()
         
-        tools = [name for name in dir(ToolArgs) if not name.startswith("__")]
+        tools = [name for name in dir(ToolArgs) if not name.startswith("__") and name not in await self.db.get_disabled_tools()]
         tools = "\n- ".join(tools)
         
         if len(tools) > 2000:
             tools = tools[:1997] + "..."
         
         await i.followup.send(tools)
+        
+    @app_commands.command(description="Enables a tool for the AI.")
+    async def enable_tool(self, i: I, tool: str):
+        await i.response.defer()
+        
+        if i.user.guild_permissions.manage_messages or i.user.id == self.bot.owner_id:
+            if tool in await self.db.get_disabled_tools():
+                await self.db.remove_disabled_tool(tool)
+                await i.followup.send(f"-# Tool {tool} enabled.")
+            else:
+                await i.followup.send(f"-# Tool {tool} is already enabled.")
+        else:
+            await i.followup.send("-# You do not have permission to use this command!")
+            
+    @app_commands.command(description="Disables a tool for the AI.")
+    async def disable_tool(self, i: I, tool: str):
+        await i.response.defer()
+        
+        if i.user.guild_permissions.manage_messages or i.user.id == self.bot.owner_id:
+            if tool in await self.db.get_disabled_tools():
+                await i.followup.send(f"-# Tool {tool} is already disabled.")
+            else:
+                await self.db.add_disabled_tool(tool)
+                await i.followup.send(f"-# Tool {tool} disabled.")
+        else:
+            await i.followup.send("-# You do not have permission to use this command!")
     
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
