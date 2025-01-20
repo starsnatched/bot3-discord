@@ -234,6 +234,9 @@ class AI(commands.GroupCog, name="ai"):
         await i.response.defer()
         
         if i.user.guild_permissions.manage_messages or i.user.id == self.bot.owner_id:
+            if tool == "send_message":
+                await i.followup.send("-# The send_message tool cannot be disabled.")
+                return
             if tool in await self.db.get_disabled_tools():
                 await i.followup.send(f"-# Tool {tool} is already disabled.")
             else:
