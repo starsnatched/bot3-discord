@@ -18,12 +18,12 @@ class SendVoiceMessage(BaseToolArgs):
     content: str = Field(..., description="Content of the voice message to send. Make it short and concise.")
 
 class MemoryInsert(BaseToolArgs):
-    """A tool to insert a memory into the vector database."""
+    """A tool to insert a memory into the vector database. Memories are used to remember important information for later use. Utilize this tool often to remember as much as possible."""
     tool_type: Literal["memory_insert"]
     memory: str = Field(..., description="Detailed description of the memory to remember. Make it as detailed as possible.")
     
 class MemoryRetrieve(BaseToolArgs):
-    """A tool to retrieve a memory from the vector database."""
+    """A tool to retrieve a memory from the vector database. Memories are used to remember important information for later use. Utilize this tool often to remember as much as possible."""
     tool_type: Literal["memory_retrieve"]
     memory: str = Field(..., description="Detailed description of the memory to retrieve.")
     
