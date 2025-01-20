@@ -15,7 +15,7 @@ import json
 import logging
 import asyncio
 
-class AI(commands.Cog):
+class AI(commands.GroupCog, name="ai"):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.dc_utils = DiscordUtils(bot=bot)
