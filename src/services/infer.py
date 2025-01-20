@@ -5,7 +5,7 @@ import chromadb
 from chromadb.config import Settings
 
 import uuid
-from typing import *
+from typing import List, Dict
 from decouple import config
 from datetime import datetime
 

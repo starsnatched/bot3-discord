@@ -1,4 +1,5 @@
 from peewee import *
+
 from typing import List, Dict, Optional
 import logging
 from datetime import datetime

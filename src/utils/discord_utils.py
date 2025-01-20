@@ -1,8 +1,10 @@
 import discord
 from discord.ext import commands
+
+from utils.voice_utils import VoiceUtils
 from utils.models import ReasoningModel
 from services.infer import OpenAI, Ollama
-from utils.voice_utils import VoiceUtils
+
 from typing import Any, Optional, Union
 import json
 import io
