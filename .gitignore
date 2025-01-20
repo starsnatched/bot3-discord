@@ -29,6 +29,7 @@ MANIFEST
 *.db
 db/
 .vscode/
+tests/
 .DS_Store
 
 # PyInstaller

@@ -7,6 +7,7 @@ from chromadb.config import Settings
 import uuid
 from typing import *
 from decouple import config
+from datetime import datetime
 
 from utils.models import ReasoningModel
 
@@ -31,6 +32,7 @@ class OpenAI:
         return results['documents'][0][0]
     
     async def store_memory(self, memory: str) -> str:
+        memory = memory + "\nTIMESTAMP: " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         response = await self.client.embeddings.create(
             model=config('OPENAI_EMBEDDING_MODEL'),
             input=memory
@@ -72,6 +74,7 @@ class Ollama:
         return results['documents'][0][0]['answer']
         
     async def store_memory(self, memory: str) -> str:
+        memory = memory + "\nTIMESTAMP: " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         response = await self.client.embeddings(
             model=config('OLLAMA_EMBEDDING_MODEL'),
             prompt=memory
