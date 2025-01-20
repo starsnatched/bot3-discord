@@ -10,7 +10,6 @@ from services.database import DatabaseService
 from utils.get_prompt import generate_system_prompt
 
 from typing import Optional, Dict
-from decouple import config
 import json
 import logging
 import asyncio
