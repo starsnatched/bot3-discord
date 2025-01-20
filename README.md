@@ -67,6 +67,14 @@ To see if the bot is enabled in the channel:
 /status
 ```
 
+If you believe you messed up, or if the LLM is acting up, run:
+
+```
+/reset
+```
+
+This will reset the chat history in the specific channel.
+
 # Adding More Tools
 Within `src/utils/models.py`, add a `BaseToolArgs` class as such:
 
