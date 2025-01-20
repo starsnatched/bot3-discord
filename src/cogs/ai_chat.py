@@ -5,7 +5,8 @@ from discord.ext import commands
 
 from services.infer import OpenAI, Ollama
 from utils.discord_utils import DiscordUtils
-from utils.models import ReasoningModel, ToolArgs
+from utils.models import ReasoningModel
+from utils.tools import get_tool_info
 from services.database import DatabaseService
 from utils.get_prompt import generate_system_prompt
 
@@ -82,7 +83,7 @@ class AI(commands.GroupCog, name="ai"):
                 pass
             
         try:
-            system_prompt = generate_system_prompt(self.bot, message.channel)
+            system_prompt = await generate_system_prompt(self.bot, message.channel)
             message_json = self.create_message_json(message)
             await self.db.add_message(message.channel.id, "user", message_json, message.attachments[0].url if message.attachments else None)
 
@@ -208,9 +209,14 @@ class AI(commands.GroupCog, name="ai"):
     async def tools(self, i: I):
         await i.response.defer()
         
-        tools = [name for name in dir(ToolArgs) if not name.startswith("__") and name not in await self.db.get_disabled_tools()]
-        tools = "\n- ".join(tools)
+        tools = await get_tool_info(omit_disabled=True)
+        tools = tools.split("\n")
+        tool_list = []
+        for tool in tools:
+            if tool.startswith("TOOL_TYPE: "):
+                tool_list.append(tool.replace("TOOL_TYPE: ", "").strip())
         
+        tools = "- " + "\n- ".join(tool_list)
         if len(tools) > 2000:
             tools = tools[:1997] + "..."
         

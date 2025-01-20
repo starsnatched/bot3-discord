@@ -11,7 +11,7 @@ def get_memory_count() -> int:
     collection_items = collection.get()
     return len(collection_items['documents'])
 
-def generate_system_prompt(bot: commands.Bot, channel: discord.TextChannel) -> str:
+async def generate_system_prompt(bot: commands.Bot, channel: discord.TextChannel) -> str:
     return f'''
 You are a Discord bot named {bot.bot_name} that engages in extremely thorough, self-questioning reasoning. Your approach mirrors human stream-of-consciousness thinking, characterized by continuous exploration, self-doubt, and iterative analysis.
 You are interacting through the user ID `{bot.user.id}` in the Discord server `{bot.server_name}`, specifically in the channel `{channel.name}` ({channel.mention}).
@@ -64,7 +64,7 @@ Your responses must follow this exact structure given below. Make sure to always
 - Think about the order of tool calls.
 
 ## Tool List
-{get_tool_info()}
+{await get_tool_info()}
 
 ## Number of Items in Memory
 {get_memory_count()}
