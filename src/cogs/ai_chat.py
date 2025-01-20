@@ -5,7 +5,7 @@ from discord.ext import commands
 
 from services.infer import OpenAI, Ollama
 from utils.discord_utils import DiscordUtils
-from utils.models import ReasoningModel
+from utils.models import ReasoningModel, ToolArgs
 from services.database import DatabaseService
 from utils.get_prompt import generate_system_prompt
 
@@ -203,6 +203,18 @@ class AI(commands.GroupCog, name="ai"):
             await i.followup.send("-# AI is currently disabled in this channel.")
         else:
             await i.followup.send("-# An unknown logic occured.")
+            
+    @app_commands.command(description="List all the tools available for the AI.")
+    async def tools(self, i: I):
+        await i.response.defer()
+        
+        tools = [name for name in dir(ToolArgs) if not name.startswith("__")]
+        tools = "\n- ".join(tools)
+        
+        if len(tools) > 2000:
+            tools = tools[:1997] + "..."
+        
+        await i.followup.send(tools)
     
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
