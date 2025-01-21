@@ -15,7 +15,8 @@ class Bot(commands.Bot):
         self.backend = config('BACKEND_TYPE', default='openai')
         self.server_name = "Euphoria"
         self.bot_name = "bot3"
-        self.owner_id = config('DEV_ID', cast=int)
+        self.dev_id = config('DEV_ID', cast=int)
+        self._log_startup()
         
         super().__init__(
             command_prefix=':',
@@ -23,6 +24,11 @@ class Bot(commands.Bot):
             case_insensitive=True,
             description=f"{self.bot_name} - An experimental deep thinker."
         )
+        
+    def _log_startup(self) -> None:
+        self.logger.info(f'Starting {self.bot_name}...')
+        self.logger.info(f'Backend type: {self.backend}')
+        self.logger.info(f'Developer ID: {self.dev_id}')
 
     def _setup_logging(self) -> None:
         logging.basicConfig(

@@ -102,7 +102,7 @@ Go to `src/utils/discord_utils.py`, within `handle_tools` method, write a handle
 ```python
 if output.tool_args.tool_type == "dice_roll":
     # Optional: Send a debugging message that only the developer can trigger.
-    if message.author.id == self.bot.owner_id:
+    if message.author.id == self.bot.dev_id:
         await message.reply(f"-# Calling tool: {output.tool_args.tool_type}", mention_author=False, view=ButtonView(output.reasoning, message.author.id))
     result = random.randint(1, output.tool_args.sides)
     return self.create_tool_return_json(output.tool_args.tool_type, result)

@@ -132,7 +132,7 @@ class AI(commands.GroupCog, name="ai"):
     async def reset(self, i: I):
         await i.response.defer()
         
-        if i.user.guild_permissions.manage_messages or i.user.id == self.bot.owner_id:
+        if i.user.guild_permissions.manage_messages or i.user.id == self.bot.dev_id:
             await self.db.clear_channel_history(i.channel_id)
             
             await i.followup.send("-# Channel history cleared.")
@@ -144,7 +144,7 @@ class AI(commands.GroupCog, name="ai"):
     async def toggle(self, i: I):
         await i.response.defer()
         
-        if i.user.guild_permissions.manage_messages or i.user.id == self.bot.owner_id:
+        if i.user.guild_permissions.manage_messages or i.user.id == self.bot.dev_id:
             if i.channel_id in await self.db.get_enabled_channels():
                 await self.db.remove_enabled_channel(i.channel_id)
                 await i.followup.send("-# AI disabled in this channel.")
@@ -164,7 +164,7 @@ class AI(commands.GroupCog, name="ai"):
         if channel is None:
             channel = i.channel
         
-        if i.user.guild_permissions.manage_messages or i.user.id == self.bot.owner_id:
+        if i.user.guild_permissions.manage_messages or i.user.id == self.bot.dev_id:
             if channel.id in await self.db.get_disabled_channels():
                 await i.followup.send("-# AI is already disabled in this channel.")
                 return
@@ -180,7 +180,7 @@ class AI(commands.GroupCog, name="ai"):
     async def enable(self, i: I):
         await i.response.defer()
         
-        if i.user.guild_permissions.manage_messages or i.user.id == self.bot.owner_id:
+        if i.user.guild_permissions.manage_messages or i.user.id == self.bot.dev_id:
             if i.channel_id in await self.db.get_enabled_channels():
                 await i.followup.send("-# AI is already enabled in this channel.")
                 return
@@ -229,7 +229,7 @@ class AI(commands.GroupCog, name="ai"):
     async def enable_tool(self, i: I, tool: str):
         await i.response.defer()
         
-        if i.user.guild_permissions.manage_messages or i.user.id == self.bot.owner_id:
+        if i.user.guild_permissions.manage_messages or i.user.id == self.bot.dev_id:
             if tool in await self.db.get_disabled_tools():
                 await self.db.remove_disabled_tool(tool)
                 await i.followup.send(f"-# Tool {tool} enabled.")
@@ -242,7 +242,7 @@ class AI(commands.GroupCog, name="ai"):
     async def disable_tool(self, i: I, tool: str):
         await i.response.defer()
         
-        if i.user.guild_permissions.manage_messages or i.user.id == self.bot.owner_id:
+        if i.user.guild_permissions.manage_messages or i.user.id == self.bot.dev_id:
             if tool == "send_message":
                 await i.followup.send("-# The send_message tool cannot be disabled.")
                 return

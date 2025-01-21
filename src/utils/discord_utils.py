@@ -51,12 +51,12 @@ class DiscordUtils:
             if len(transcription) > 2000:
                 transcription = transcription[:1996].strip() + " ..."
                 
-            if message.author.id == self.bot.owner_id:
+            if message.author.id == self.bot.dev_id:
                 await message.reply(
                     content=f"-# {transcription}",
                     file=file,
                     mention_author=False,
-                    view=ButtonView(reasoning, message.author.id)
+                    view=ButtonView(reasoning, self.bot.dev_id)
                 )
             else:
                 await message.reply(
@@ -83,8 +83,13 @@ class DiscordUtils:
         }, indent=4)
         
     async def handle_tools(self, message: discord.Message, output: ReasoningModel) -> Optional[str]:
-        output.reasoning = "-# " + output.reasoning
-        output.reasoning = output.reasoning.replace('\n', '\n-# ')
+        reasoning_list = [
+            f"-# {line.strip()}" 
+            for line in output.reasoning.split("\n") 
+            if line.strip()
+        ]
+        output.reasoning = "\n\n".join(reasoning_list)
+        
         if len(output.reasoning) > 2000:
             output.reasoning = output.reasoning[:1996] + " ..."
                         
@@ -96,8 +101,8 @@ class DiscordUtils:
         
         # Basic tools
         if output.tool_args.tool_type == "send_message":
-            if message.author.id == self.bot.owner_id:
-                await message.reply(output.tool_args.content, mention_author=False, view=ButtonView(output.reasoning, message.author.id))
+            if message.author.id == self.bot.dev_id:
+                await message.reply(output.tool_args.content, mention_author=False, view=ButtonView(output.reasoning, self.bot.dev_id))
                 return
             await message.reply(output.tool_args.content, mention_author=False)
             return
@@ -111,20 +116,20 @@ class DiscordUtils:
             return
         
         if output.tool_args.tool_type == "memory_insert":
-            if message.author.id == self.bot.owner_id:
-                await message.reply(f"-# Calling tool: {output.tool_args.tool_type}", mention_author=False, view=ButtonView(output.reasoning, message.author.id))
+            if message.author.id == self.bot.dev_id:
+                await message.reply(f"-# Calling tool: {output.tool_args.tool_type}", mention_author=False, view=ButtonView(output.reasoning, self.bot.dev_id))
             result = await self.client.store_memory(output.tool_args.memory)
             return self.create_tool_return_json(output.tool_args.tool_type, result)
             
         if output.tool_args.tool_type == "memory_retrieve":
-            if message.author.id == self.bot.owner_id:
-                await message.reply(f"-# Calling tool: {output.tool_args.tool_type}", mention_author=False, view=ButtonView(output.reasoning, message.author.id))
+            if message.author.id == self.bot.dev_id:
+                await message.reply(f"-# Calling tool: {output.tool_args.tool_type}", mention_author=False, view=ButtonView(output.reasoning, self.bot.dev_id))
             result = await self.client.retrieve_memory(output.tool_args.memory)
             return self.create_tool_return_json(output.tool_args.tool_type, result)
         
         if output.tool_args.tool_type == "dice_roll":
-            if message.author.id == self.bot.owner_id:
-                await message.reply(f"-# Calling tool: {output.tool_args.tool_type}", mention_author=False, view=ButtonView(output.reasoning, message.author.id))
+            if message.author.id == self.bot.dev_id:
+                await message.reply(f"-# Calling tool: {output.tool_args.tool_type}", mention_author=False, view=ButtonView(output.reasoning, self.bot.dev_id))
             result = random.randint(1, output.tool_args.sides)
             return self.create_tool_return_json(output.tool_args.tool_type, result)
         
