@@ -83,9 +83,9 @@ class AI(commands.GroupCog, name="ai"):
                 pass
             
         try:
-            if self.bot.backend_type == "openai":
+            if self.bot.backend == "openai":
                 system_prompt = await generate_system_prompt_openai(self.bot, message.channel)
-            elif self.bot.backend_type == "ollama":
+            elif self.bot.backend == "ollama":
                 system_prompt = await generate_system_prompt_ollama(self.bot, message.channel)
             else:
                 raise ValueError("Invalid backend type.")
@@ -138,6 +138,12 @@ class AI(commands.GroupCog, name="ai"):
         await i.response.defer()
         
         if i.user.guild_permissions.manage_messages or i.user.id == self.bot.dev_id:
+            if i.channel_id in self.ongoing_tasks:
+                self.ongoing_tasks[i.channel_id].cancel()
+                try:
+                    await self.ongoing_tasks[i.channel_id]
+                except asyncio.CancelledError:
+                    pass
             await self.db.clear_channel_history(i.channel_id)
             
             await i.followup.send("-# Channel history cleared.")
