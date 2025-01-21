@@ -35,7 +35,7 @@ OLLAMA_NUM_CTX=64000
 
 # Misc
 BACKEND_TYPE=ollama
-PERSONA="A deep thinker named bot3."
+PERSONA="A deep thinker named bot3. You always reply with one short sentence."
 ```
 
 Have fun!
