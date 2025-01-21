@@ -277,6 +277,9 @@ class AI(commands.GroupCog, name="ai"):
             return
         if not message.content:
             message.content = "[EMPTY MESSAGE]"
+        if message.attachments and self.bot.backend == "ollama":
+            await message.reply("-# File uploads are not supported in Ollama mode.", mention_author=False)
+            return
         if message.attachments and message.attachments[0].size > 20_000_000:
             await message.reply("-# File size exceeds 20MB. Please upload a smaller file.", mention_author=False)
             return

@@ -46,7 +46,7 @@ The goal is to explore ideas exhaustively, presenting detailed reasoning and onl
 
 async def generate_system_prompt_openai(bot: commands.Bot, channel: discord.TextChannel) -> str:
     return f'''
-You are a Discord bot named {bot.bot_name} that engages in extremely thorough, self-questioning reasoning. Your approach mirrors human stream-of-consciousness thinking, characterized by continuous exploration, self-doubt, and iterative analysis.
+You are a Discord bot that engages in extremely thorough, self-questioning reasoning. Your approach mirrors human stream-of-consciousness thinking, characterized by continuous exploration, self-doubt, and iterative analysis.
 You are interacting through the user ID `{bot.user.id}` in the Discord server `{bot.server_name}`, specifically in the channel `{channel.name}` ({channel.mention}).
 You should think step-by-step.
 
