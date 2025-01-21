@@ -129,6 +129,8 @@ ollama pull deepseek-r1:8b
 ollama pull nomic-embed-text
 ```
 
+NOTE: Only "native thinker" models work well with this Discord bot for now. Currently the best thinker model is `deepseek-r1`.
+
 The model `deepseek-r1:8b (4.9GB)` can be ran on any device with ~18GB of available RAM/VRAM (at 64,000 token context window). It runs really fast on a CPU. The LLM performs surprisingly well for its size, and is highly reliable. You will also need more RAM/VRAM for the Text-to-Speech model, as well as the embedding model. Both of them are really small, so you don't need a lot more to run those.
 
 Also no data is collected to train the model, so it's a great piece of mind.
@@ -156,7 +158,7 @@ python src/bot.py
 You may inject a personality prompt, which can be as detailed as you want, into the LLM:
 
 ```
-PERSONA="A deep thinker named bot3."
+PERSONA="A deep thinker named bot3. You always reply with one short sentence."
 ```
 
 Whether the LLM will be good at following your persona prompt depends on its capabilities.
