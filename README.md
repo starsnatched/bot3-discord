@@ -29,9 +29,9 @@ OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 
 # Ollama
 OLLAMA_HOST=http://localhost:11434
-OLLAMA_MODEL=smallthinker
+OLLAMA_MODEL=deepseek-r1:8b
 OLLAMA_EMBEDDING_MODEL=nomic-embed-text
-OLLAMA_NUM_CTX=32000
+OLLAMA_NUM_CTX=64000
 
 # Misc
 BACKEND_TYPE=openai
@@ -101,6 +101,9 @@ Go to `src/utils/discord_utils.py`, within `handle_tools` method, write a handle
 
 ```python
 if output.tool_args.tool_type == "dice_roll":
+    # Optional: Send a debugging message that only the developer can trigger.
+    if message.author.id == self.bot.owner_id:
+        await message.reply(f"-# Calling tool: {output.tool_args.tool_type}", mention_author=False, view=ButtonView(output.reasoning, message.author.id))
     result = random.randint(1, output.tool_args.sides)
     return self.create_tool_return_json(output.tool_args.tool_type, result)
 ```
@@ -121,21 +124,23 @@ You can also use this with [Ollama](https://ollama.com), if you wish to run ever
 
 After installing Ollama, run:
 ```
-ollama pull huihui_ai/smallthinker-abliterated
+ollama pull deepseek-r1:8b
 ollama pull nomic-embed-text
 ```
 
-The model `huihui_ai/smallthinker-abliterated (1.9GB)` can be ran on any device with ~2GB of available RAM/VRAM. It runs really fast on a CPU. The LLM performs surprisingly well for its size, and is highly reliable.
+The model `deepseek-r1:8b (4.9GB)` can be ran on any device with ~18GB of available RAM/VRAM (at 64,000 token context window). It runs really fast on a CPU. The LLM performs surprisingly well for its size, and is highly reliable. You will also need more RAM/VRAM for the Text-to-Speech model, as well as the embedding model. Both of them are really small, so you don't need a lot more to run those.
 
-It's also uncensored, unlike the OpenAI's GPT, and no data is collected to train the model, so it's a great piece of mind.
+Also no data is collected to train the model, so it's a great piece of mind.
+
+I have set the context window to 64,000. However, you can increase this up to 131,072. If you do so, the LLM will consume a lot more RAM/VRAM, and the quality of the output will degrade.
 
 Then, change `.env` as such:
 
 ```
 OLLAMA_HOST=http://localhost:11434
-OLLAMA_MODEL=huihui_ai/smallthinker-abliterated
+OLLAMA_MODEL=deepseek-r1:8b
 OLLAMA_EMBEDDING_MODEL=nomic-embed-text
-OLLAMA_NUM_CTX=32000
+OLLAMA_NUM_CTX=64000
 
 BACKEND_TYPE=ollama
 ```

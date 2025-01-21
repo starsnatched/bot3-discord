@@ -3,6 +3,7 @@ from discord.ext import commands
 
 from utils.voice_utils import VoiceUtils
 from utils.models import ReasoningModel
+from utils.discord_model import ButtonView
 from services.infer import OpenAI, Ollama
 from services.database import DatabaseService
 
@@ -32,7 +33,7 @@ class DiscordUtils:
         else:
             raise ValueError("Invalid backend type.")
             
-    async def upload_audio(self, message: discord.Message, audio: Union[torch.Tensor, np.ndarray], transcription: str) -> None:
+    async def upload_audio(self, message: discord.Message, audio: Union[torch.Tensor, np.ndarray], transcription: str, reasoning: str) -> None:
         if isinstance(audio, torch.Tensor):
             audio = audio.cpu().numpy()
         else:
@@ -45,14 +46,24 @@ class DiscordUtils:
             wav_buffer.seek(0)
             file = discord.File(wav_buffer, filename="audio.wav")
             
-            transcription = "-# " + transcription
             transcription = transcription.replace("\n", "\n-# ")
             
-            await message.reply(
-                content=f"-# {transcription}",
-                file=file,
-                mention_author=False
-            )
+            if len(transcription) > 2000:
+                transcription = transcription[:1996].strip() + " ..."
+                
+            if message.author.id == self.bot.owner_id:
+                await message.reply(
+                    content=f"-# {transcription}",
+                    file=file,
+                    mention_author=False,
+                    view=ButtonView(reasoning, message.author.id)
+                )
+            else:
+                await message.reply(
+                    content=f"-# {transcription}",
+                    file=file,
+                    mention_author=False
+                )
                 
     @staticmethod
     def create_tool_return_json(tool_type: str, content: Any) -> str:
@@ -76,7 +87,7 @@ class DiscordUtils:
         output.reasoning = output.reasoning.replace('\n', '\n-# ')
         if len(output.reasoning) > 2000:
             output.reasoning = output.reasoning[:1996] + " ..."
-            
+                        
         if not output.tool_args:
             return
         
@@ -85,6 +96,9 @@ class DiscordUtils:
         
         # Basic tools
         if output.tool_args.tool_type == "send_message":
+            if message.author.id == self.bot.owner_id:
+                await message.reply(output.tool_args.content, mention_author=False, view=ButtonView(output.reasoning, message.author.id))
+                return
             await message.reply(output.tool_args.content, mention_author=False)
             return
         
@@ -93,18 +107,24 @@ class DiscordUtils:
             if audio is None:
                 return self.create_error_json(output.tool_args.tool_type, Exception("Failed to generate voice."))
             
-            await self.upload_audio(message, audio, output.tool_args.content)
+            await self.upload_audio(message, audio, output.tool_args.content, output.reasoning)
             return
         
         if output.tool_args.tool_type == "memory_insert":
+            if message.author.id == self.bot.owner_id:
+                await message.reply(f"-# Calling tool: {output.tool_args.tool_type}", mention_author=False, view=ButtonView(output.reasoning, message.author.id))
             result = await self.client.store_memory(output.tool_args.memory)
             return self.create_tool_return_json(output.tool_args.tool_type, result)
             
         if output.tool_args.tool_type == "memory_retrieve":
+            if message.author.id == self.bot.owner_id:
+                await message.reply(f"-# Calling tool: {output.tool_args.tool_type}", mention_author=False, view=ButtonView(output.reasoning, message.author.id))
             result = await self.client.retrieve_memory(output.tool_args.memory)
             return self.create_tool_return_json(output.tool_args.tool_type, result)
         
         if output.tool_args.tool_type == "dice_roll":
+            if message.author.id == self.bot.owner_id:
+                await message.reply(f"-# Calling tool: {output.tool_args.tool_type}", mention_author=False, view=ButtonView(output.reasoning, message.author.id))
             result = random.randint(1, output.tool_args.sides)
             return self.create_tool_return_json(output.tool_args.tool_type, result)
         
