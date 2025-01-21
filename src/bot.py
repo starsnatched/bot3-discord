@@ -15,6 +15,7 @@ class Bot(commands.Bot):
         self.backend = config('BACKEND_TYPE', default='openai')
         self.server_name = "Euphoria"
         self.bot_name = "bot3"
+        self.persona = config("PERSONA", default="A deep thinker named bot3.")
         self.dev_id = config('DEV_ID', cast=int)
         self._log_startup()
         

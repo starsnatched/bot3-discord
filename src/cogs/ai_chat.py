@@ -8,7 +8,7 @@ from utils.discord_utils import DiscordUtils
 from utils.models import ReasoningModel
 from utils.tools import get_tool_info
 from services.database import DatabaseService
-from utils.get_prompt import generate_system_prompt
+from utils.get_prompt import generate_system_prompt_ollama, generate_system_prompt_openai
 
 from typing import Optional, Dict
 import json
@@ -83,7 +83,12 @@ class AI(commands.GroupCog, name="ai"):
                 pass
             
         try:
-            system_prompt = await generate_system_prompt(self.bot, message.channel)
+            if self.bot.backend_type == "openai":
+                system_prompt = await generate_system_prompt_openai(self.bot, message.channel)
+            elif self.bot.backend_type == "ollama":
+                system_prompt = await generate_system_prompt_ollama(self.bot, message.channel)
+            else:
+                raise ValueError("Invalid backend type.")
             message_json = self.create_message_json(message)
             await self.db.add_message(message.channel.id, "user", message_json, message.attachments[0].url if message.attachments else None)
 

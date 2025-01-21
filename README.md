@@ -34,7 +34,8 @@ OLLAMA_EMBEDDING_MODEL=nomic-embed-text
 OLLAMA_NUM_CTX=64000
 
 # Misc
-BACKEND_TYPE=openai
+BACKEND_TYPE=ollama
+PERSONA="A deep thinker named bot3."
 ```
 
 Have fun!
@@ -150,3 +151,12 @@ Have fun!
 ```
 python src/bot.py
 ```
+
+# Personality Injection
+You may inject a personality prompt, which can be as detailed as you want, into the LLM:
+
+```
+PERSONA="A deep thinker named bot3."
+```
+
+Whether the LLM will be good at following your persona prompt depends on its capabilities.
