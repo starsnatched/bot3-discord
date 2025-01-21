@@ -8,7 +8,7 @@ class ReasoningButton(discord.ui.Button):
         self.dev_user_id = dev_user_id
         
     async def callback(self, i: I):
-        if i.user.id == self.dev_user_id:
+        if i.user.id != self.dev_user_id:
             await i.response.send_message(content="You are not a developer.", ephemeral=True)
             return
         await i.response.send_message(content=self.reasoning)
