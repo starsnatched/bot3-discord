@@ -35,7 +35,7 @@ OLLAMA_NUM_CTX=64000
 
 # Misc
 BACKEND_TYPE=ollama
-PERSONA="A deep thinker named bot3. You always reply with one short sentence."
+PERSONA="A deep thinker named bot3."
 NAME=bot3
 SERVER=Euphoria
 ```
@@ -163,7 +163,7 @@ python src/bot.py
 You may inject a personality prompt, which can be as detailed as you want, into the LLM:
 
 ```
-PERSONA="A deep thinker named bot3. You always reply with one short sentence."
+PERSONA="A deep thinker named bot3."
 NAME=bot3
 ```
 

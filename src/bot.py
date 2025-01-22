@@ -15,7 +15,7 @@ class Bot(commands.Bot):
         self.backend = config('BACKEND_TYPE', default='openai')
         self.server_name = config("SERVER")
         self.bot_name = config("NAME")
-        self.persona = config("PERSONA", default="A deep thinker named bot3. You always reply with one short sentence.")
+        self.persona = config("PERSONA", default="A deep thinker named bot3.")
         self.dev_id = config('DEV_ID', cast=int)
         self._log_startup()
         
