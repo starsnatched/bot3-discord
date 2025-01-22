@@ -36,6 +36,8 @@ OLLAMA_NUM_CTX=64000
 # Misc
 BACKEND_TYPE=ollama
 PERSONA="A deep thinker named bot3. You always reply with one short sentence."
+NAME=bot3
+SERVER=Euphoria
 ```
 
 Have fun!
@@ -162,6 +164,7 @@ You may inject a personality prompt, which can be as detailed as you want, into 
 
 ```
 PERSONA="A deep thinker named bot3. You always reply with one short sentence."
+NAME=bot3
 ```
 
 Whether the LLM will be good at following your persona prompt depends on its capabilities.
