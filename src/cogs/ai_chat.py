@@ -72,7 +72,7 @@ class AI(commands.GroupCog, name="ai"):
         
         return response
 
-    async def handle_message(self, message: discord.Message):
+    async def handle_message(self, message: discord.Message, is_edit: bool = False):
         channel_id = message.channel.id
         
         if channel_id in self.ongoing_tasks:
@@ -90,14 +90,33 @@ class AI(commands.GroupCog, name="ai"):
             else:
                 raise ValueError("Invalid backend type.")
             message_json = self.create_message_json(message)
-            await self.db.add_message(message.channel.id, "user", message_json, message.attachments[0].url if message.attachments else None)
+            
+            if is_edit:
+                await self.db.update_message(
+                    message.channel.id,
+                    message.id,
+                    message_json,
+                    message.edited_at
+                )
+            else:
+                await self.db.add_message(
+                    message.channel.id,
+                    "user",
+                    message_json,
+                    message.attachments[0].url if message.attachments else None,
+                    message.id
+                )
 
             async def process_message():
                 try:
+                    first_response = True
                     while True:
                         response = await self.generate_response(message.channel.id, system_prompt)
                         return_json = await self.process_ai_response(message, response)
                         
+                        if first_response and response.tool_args.tool_type == "send_message":
+                            first_response = False
+
                         del response.reasoning
                         await self.db.add_message(
                             message.channel.id,
@@ -288,6 +307,32 @@ class AI(commands.GroupCog, name="ai"):
             return
         
         await self.handle_message(message)
-        
+
+    @commands.Cog.listener()
+    async def on_message_edit(self, before: discord.Message, after: discord.Message):
+        if before.author.bot:
+            return
+        if before.guild is None:
+            return
+            
+        if before.id not in self.ongoing_tasks:
+            return
+            
+        if after.channel.id in await self.db.get_disabled_channels():
+            return
+        if not self.bot.user.mentioned_in(after) and after.channel.id not in await self.db.get_enabled_channels():
+            return
+        if not after.content:
+            after.content = "[EMPTY MESSAGE]"
+            
+        if after.attachments and self.bot.backend == "ollama":
+            return
+        if after.attachments and after.attachments[0].size > 20_000_000:
+            return
+        if after.attachments and "image/" not in after.attachments[0].content_type:
+            return
+
+        await self.handle_message(after, is_edit=True)
+                
 async def setup(bot: commands.Bot):
     await bot.add_cog(AI(bot))

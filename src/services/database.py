@@ -11,8 +11,10 @@ class Message(Model):
     channel_id = IntegerField()
     role = CharField()
     content = TextField()
-    image_url = CharField(null=True)
+    image_url = CharField(null=True) 
     timestamp = DateTimeField(default=datetime.now)
+    edited_timestamp = DateTimeField(null=True)
+    message_id = IntegerField(null=True)
 
     class Meta:
         database = db
@@ -57,6 +59,19 @@ class DatabaseService:
             db.create_tables([DisabledChannels])
         if not DisabledTools.table_exists():
             db.create_tables([DisabledTools])
+            
+    async def update_message(self, channel_id: int, message_id: int, content: str, edited_timestamp: datetime) -> None:
+        try:
+            Message.update(
+                content=content,
+                edited_timestamp=edited_timestamp
+            ).where(
+                (Message.channel_id == channel_id) & 
+                (Message.message_id == message_id)
+            ).execute()
+        except Exception as e:
+            self.logger.error(f"Error updating message in database: {e}")
+            raise
             
     async def get_disabled_tools(self) -> List[str]:
         try:
@@ -127,13 +142,14 @@ class DatabaseService:
             self.logger.error(f"Error removing enabled channel from database: {e}")
             raise
 
-    async def add_message(self, channel_id: int, role: str, content: str, image_url: Optional[str]) -> None:
+    async def add_message(self, channel_id: int, role: str, content: str, image_url: Optional[str], message_id: Optional[int] = None) -> None:
         try:
             Message.create(
                 channel_id=channel_id,
                 role=role,
                 content=content,
-                image_url=image_url
+                image_url=image_url,
+                message_id=message_id
             )
         except Exception as e:
             self.logger.error(f"Error adding message to database: {e}")
