@@ -112,6 +112,9 @@ class AI(commands.GroupCog, name="ai"):
                     first_response = True
                     while True:
                         response = await self.generate_response(message.channel.id, system_prompt)
+                        if not response.tool_args:
+                            break
+                        
                         return_json = await self.process_ai_response(message, response)
                         
                         if first_response and response.tool_args.tool_type == "send_message":
