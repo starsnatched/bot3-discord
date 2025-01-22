@@ -120,6 +120,9 @@ It can currently do:
 - Send a voice message.
 - Roll a dice!
 
+### Bonus Feature
+The bot only responds when it thinks you are talking to the bot. The consistency of this feature depends on the LLM.
+
 # [Ollama](https://ollama.com) Usage
 You can also use this with [Ollama](https://ollama.com), if you wish to run everything locally.
 
