@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, field_validator
-from typing import Literal, Union, Type
+from typing import Literal, Union, Optional
 
 class BaseToolArgs(BaseModel):
     """Base class for all tool arguments."""
@@ -45,9 +45,9 @@ class ReasoningModel(BaseModel):
         ...,
         description="Detailed and long step-by-step reasoning. Do not include the output here."
     )
-    tool_args: ToolArgs = Field(
+    tool_args: Optional[ToolArgs] = Field(
         ...,
-        description="For tool calls, choose the appropriate tool and provide the necessary arguments here."
+        description="For tool calls, choose the appropriate tool and provide the necessary arguments here. If no tool is needed, set this to `null`."
     )
 
     @field_validator("tool_args")
