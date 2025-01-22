@@ -13,8 +13,8 @@ class Bot(commands.Bot):
     def __init__(self) -> None:
         self._setup_logging()
         self.backend = config('BACKEND_TYPE', default='openai')
-        self.server_name = "Euphoria"
-        self.bot_name = "bot3"
+        self.server_name = config("SERVER")
+        self.bot_name = config("NAME")
         self.persona = config("PERSONA", default="A deep thinker named bot3. You always reply with one short sentence.")
         self.dev_id = config('DEV_ID', cast=int)
         self._log_startup()
