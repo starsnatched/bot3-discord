@@ -46,37 +46,79 @@ python src/bot.py
 ```
 
 # Commands
-Toggle AI chatbot in the channel:
+All commands are prefixed with `/ai`
 
+### Basic Commands
+
+| Command | Description |
+|---------|-------------|
+| `/ai toggle` | Toggles AI chat on/off in the current channel |
+| `/ai enable` | Enables AI chat in the current channel |
+| `/ai disable` | Disables AI chat in the current channel |
+| `/ai status` | Shows the current AI status in the channel |
+| `/ai reset` | Clears the chat history |
+
+### Tool Management
+
+| Command | Description |
+|---------|-------------|
+| `/ai tools` | Lists all available AI tools |
+| `/ai enable_tool <tool>` | Enables a specific tool |
+| `/ai disable_tool <tool>` | Disables a specific tool |
+
+## Usage Examples
+
+### Channel Management
+
+Enable AI in a channel:
 ```
-/toggle
+/ai enable
 ```
 
-However, the bot will respond when it's pinged, even if it's toggled off. To prevent that, use:
-
+Disable AI in a channel:
 ```
-/disable #channel_name
-```
-
-This will make the bot completely ignore the specified channel. To re-enable:
-
-```
-/enable
+/ai disable [channel]  # Optional channel parameter
 ```
 
-To see if the bot is enabled in the channel:
-
+Check AI status:
 ```
-/status
-```
-
-If you believe you messed up, or if the LLM is acting up, run:
-
-```
-/reset
+/ai status
 ```
 
-This will reset the chat history in the specific channel.
+Clear chat history:
+```
+/ai reset
+```
+
+### Tool Management
+
+List available tools:
+```
+/ai tools
+```
+
+Enable a specific tool:
+```
+/ai enable_tool <tool_name>
+```
+
+Disable a tool:
+```
+/ai disable_tool <tool_name>
+```
+
+### Permissions
+
+- Commands that modify settings (`toggle`, `enable`, `disable`, `reset`, `enable_tool`, `disable_tool`) require "Manage Messages" permission
+- Status and tools list can be viewed by all users
+
+### Chat Behavior
+
+- Bot responds to messages in enabled channels
+- In other channels, bot only responds when mentioned
+- Image uploads are supported only in OpenAI mode (max 20MB)
+- Message edits are processed in real-time
+- Tool `send_message` cannot be disabled
 
 # Adding More Tools
 Within `src/utils/models.py`, add a `BaseToolArgs` class as such:
