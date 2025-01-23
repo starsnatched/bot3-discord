@@ -84,7 +84,7 @@ You should think step-by-step.
 Your responses must follow this exact structure given below. Make sure to always include the final answer.
 
 `reasoning` field:
-[Your extensive internal monologue goes here]
+[Your extensive thinking and reasoning goes here]
 - Begin with small, foundational observations
 - Question each step thoroughly
 - Show natural thought progression
