@@ -43,7 +43,8 @@ ToolArgs = Union[
 class ReasoningModel(BaseModel):
     reasoning: str = Field(
         ...,
-        description="Detailed and long step-by-step reasoning. Do not include the output here."
+        description="Detailed and long step-by-step reasoning. Do not include the output here.",
+        alias="think"
     )
     tool_args: Optional[ToolArgs] = Field(
         ...,
