@@ -34,6 +34,48 @@ class AI(commands.GroupCog, name="ai"):
 
     async def cog_load(self):
         await self.db.init_db()
+        
+    async def get_tool_list(self):
+        tools = await get_tool_info(omit_disabled=True)
+        tools = tools.split("\n")
+        tool_list = []
+        for tool in tools:
+            if tool.startswith("TOOL_TYPE: "):
+                tool_name = tool.replace("TOOL_TYPE: ", "").replace("'", "").strip()
+                if tool_name in await self.db.get_disabled_tools():
+                    tool_list.append(f"{tool_name} (disabled)")
+                else:
+                    tool_list.append(tool_name)
+        
+        return tool_list
+        
+    async def tool_autocomplete_enable(self, interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
+        tool_names = await self.get_tool_list()
+        
+        filtered_tools = [
+            tool for tool in tool_names 
+            if current.lower() in tool.lower()
+            and "(disabled)" in tool
+        ]
+        
+        return [
+            app_commands.Choice(name=tool, value=tool.replace(" (disabled)", "").replace(" ", "_").strip())
+            for tool in filtered_tools[:25]
+        ]
+        
+    async def tool_autocomplete_disable(self, interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
+        tool_names = await self.get_tool_list()
+        
+        filtered_tools = [
+            tool for tool in tool_names 
+            if current.lower() in tool.lower()
+            and "(disabled)" not in tool
+        ]
+        
+        return [
+            app_commands.Choice(name=tool, value=tool.replace(" (disabled)", "").replace(" ", "_").strip())
+            for tool in filtered_tools[:25]
+        ]
 
     def create_message_json(self, message: discord.Message) -> str:
         if message.reference and len(message.reference.resolved.content) > 30:
@@ -237,13 +279,8 @@ class AI(commands.GroupCog, name="ai"):
     async def tools(self, i: I):
         await i.response.defer()
         
-        tools = await get_tool_info(omit_disabled=True)
-        tools = tools.split("\n")
-        tool_list = []
-        for tool in tools:
-            if tool.startswith("TOOL_TYPE: "):
-                tool_list.append(tool.replace("TOOL_TYPE: ", "").replace("'", "").replace("_", " ").strip())
-        
+        tool_list = await self.get_tool_list()
+                        
         tools = "- " + "\n- ".join(tool_list)
         if len(tools) > 2000:
             if tools.strip().endswith("-"):
@@ -254,6 +291,7 @@ class AI(commands.GroupCog, name="ai"):
         await i.followup.send(tools)
         
     @app_commands.command(description="Enables a tool for the AI.")
+    @app_commands.autocomplete(tool=tool_autocomplete_enable)
     async def enable_tool(self, i: I, tool: str):
         await i.response.defer()
         
@@ -267,6 +305,7 @@ class AI(commands.GroupCog, name="ai"):
             await i.followup.send("-# You do not have permission to use this command!")
             
     @app_commands.command(description="Disables a tool for the AI.")
+    @app_commands.autocomplete(tool=tool_autocomplete_disable)
     async def disable_tool(self, i: I, tool: str):
         await i.response.defer()
         
