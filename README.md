@@ -1,14 +1,6 @@
 # Usage
 ### *The approximate total system RAM/VRAM you need is <20GB, IF you're using local Ollama. If you use cloud-hosted services or OpenAI API, the RAM/VRAM cost is much lower at <500MB.*
 
-Download the TTS model:
-
-```
-cd src/tts
-
-wget https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/fp16/kokoro-v0_19-half.pth
-```
-
 Install requirements:
 
 ```
