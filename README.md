@@ -170,6 +170,8 @@ ollama pull nomic-embed-text
 
 NOTE: Only "native thinker" models work well with this Discord bot for now. Currently the best thinker model for this Discord bot is `huihui_ai/deepseek-r1-abliterated:14b`.
 
+You may find other "native thinker" models [here](https://ollama.com/library/deepseek-r1).
+
 The model `huihui_ai/deepseek-r1-abliterated:14b (9GB)` can be ran on any device with ~11GB of available RAM/VRAM (at 32,000 token context window). It runs really fast on a CPU. The LLM performs surprisingly well for its size, and is highly reliable. You will also need more RAM/VRAM for the Text-to-Speech model, as well as the embedding model. Both of them are really small, so you don't need a lot more to run those.
 
 Model `huihui_ai/deepseek-r1-abliterated:14b` is "abliterated," which means the LLM's ability to represent the refusal direction has been removed, essentially means it's uncensored. It'll answer NSFW, or harmful prompts, without refusing.
