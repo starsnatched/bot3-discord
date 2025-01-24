@@ -21,9 +21,9 @@ OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 
 # Ollama
 OLLAMA_HOST=http://localhost:11434
-OLLAMA_MODEL=deepseek-r1:8b
+OLLAMA_MODEL=huihui_ai/deepseek-r1-abliterated:14b
 OLLAMA_EMBEDDING_MODEL=nomic-embed-text
-OLLAMA_NUM_CTX=64000
+OLLAMA_NUM_CTX=32000
 
 # Misc
 BACKEND_TYPE=ollama
@@ -164,25 +164,25 @@ You can also use this with [Ollama](https://ollama.com), if you wish to run ever
 
 After installing Ollama, run:
 ```
-ollama pull deepseek-r1:8b
+ollama pull huihui_ai/deepseek-r1-abliterated:14b
 ollama pull nomic-embed-text
 ```
 
-NOTE: Only "native thinker" models work well with this Discord bot for now. Currently the best thinker model is `deepseek-r1`.
+NOTE: Only "native thinker" models work well with this Discord bot for now. Currently the best thinker model for this Discord bot is `huihui_ai/deepseek-r1-abliterated:14b`.
 
-The model `deepseek-r1:8b (4.9GB)` can be ran on any device with ~18GB of available RAM/VRAM (at 64,000 token context window). It runs really fast on a CPU. The LLM performs surprisingly well for its size, and is highly reliable. You will also need more RAM/VRAM for the Text-to-Speech model, as well as the embedding model. Both of them are really small, so you don't need a lot more to run those.
+The model `huihui_ai/deepseek-r1-abliterated:14b (9GB)` can be ran on any device with ~11GB of available RAM/VRAM (at 32,000 token context window). It runs really fast on a CPU. The LLM performs surprisingly well for its size, and is highly reliable. You will also need more RAM/VRAM for the Text-to-Speech model, as well as the embedding model. Both of them are really small, so you don't need a lot more to run those.
+
+Model `huihui_ai/deepseek-r1-abliterated:14b` is "abliterated," which means the LLM's ability to represent the refusal direction has been removed, essentially means it's uncensored. It'll answer NSFW, or harmful prompts, without refusing.
 
 Also no data is collected to train the model, so it's a great piece of mind.
-
-I have set the context window to 64,000. However, you can increase this up to 131,072. If you do so, the LLM will consume a lot more RAM/VRAM, and the quality of the output will degrade.
 
 Then, change `.env` as such:
 
 ```
 OLLAMA_HOST=http://localhost:11434
-OLLAMA_MODEL=deepseek-r1:8b
+OLLAMA_MODEL=huihui_ai/deepseek-r1-abliterated:14b
 OLLAMA_EMBEDDING_MODEL=nomic-embed-text
-OLLAMA_NUM_CTX=64000
+OLLAMA_NUM_CTX=32000
 
 BACKEND_TYPE=ollama
 ```
