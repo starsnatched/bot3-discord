@@ -115,13 +115,13 @@ class DiscordUtils:
         if output.tool_args.tool_type == "memory_insert":
             if message.author.id == self.bot.dev_id:
                 await message.reply(f"-# Calling tool: {output.tool_args.tool_type}", mention_author=False, view=ButtonView(output.reasoning, self.bot.dev_id))
-            result = await self.client.store_memory(output.tool_args.memory)
+            result = await self.client.store_memory(output.tool_args.memory, message.guild.id)
             return self.create_tool_return_json(output.tool_args.tool_type, result)
             
         if output.tool_args.tool_type == "memory_retrieve":
             if message.author.id == self.bot.dev_id:
                 await message.reply(f"-# Calling tool: {output.tool_args.tool_type}", mention_author=False, view=ButtonView(output.reasoning, self.bot.dev_id))
-            result = await self.client.retrieve_memory(output.tool_args.memory)
+            result = await self.client.retrieve_memory(output.tool_args.memory, message.guild.id)
             return self.create_tool_return_json(output.tool_args.tool_type, result)
         
         if output.tool_args.tool_type == "dice_roll":

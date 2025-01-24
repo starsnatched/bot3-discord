@@ -17,21 +17,22 @@ class OpenAI:
         self.chroma_client = chromadb.PersistentClient(path="./db", settings=Settings(anonymized_telemetry=False))
         self.collection = self.chroma_client.get_or_create_collection(name="memory")
         
-    async def retrieve_memory(self, query: str) -> str:
+    async def retrieve_memory(self, query: str, guild_id: int) -> str:
         response = await self.client.embeddings.create(
             model=config('OPENAI_EMBEDDING_MODEL'),
             input=query
         )
         results = self.collection.query(
             query_embeddings=[response.data[0].embedding],
-            n_results=1
+            n_results=1,
+            where={"guild_id": guild_id}
         )
         if len(results['documents'][0]) < 1:
             return "Memory not found."
         
         return results['documents'][0][0]
     
-    async def store_memory(self, memory: str) -> str:
+    async def store_memory(self, memory: str, guild_id: int) -> str:
         memory = memory + "\nTIMESTAMP: " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         response = await self.client.embeddings.create(
             model=config('OPENAI_EMBEDDING_MODEL'),
@@ -40,7 +41,8 @@ class OpenAI:
         self.collection.add(
             ids=[uuid.uuid4().hex],
             embeddings=[response.data[0].embedding],
-            documents=[memory]
+            documents=[memory],
+            metadatas=[{"guild_id": guild_id}]
         )
         
         return "Memory stored successfully."
@@ -60,20 +62,21 @@ class Ollama:
         self.chroma_client = chromadb.PersistentClient(path="./db", settings=Settings(anonymized_telemetry=False))
         self.collection = self.chroma_client.get_or_create_collection(name="memory")
         
-    async def retrieve_memory(self, query: str) -> str:
+    async def retrieve_memory(self, query: str, guild_id: int) -> str:
         response = await self.client.embeddings(
             model=config('OLLAMA_EMBEDDING_MODEL'),
             prompt=query
         )
         results = self.collection.query(
             query_embeddings=[response.embedding],
-            n_results=1
+            n_results=1,
+            where={"guild_id": guild_id}
         )
         if not results['documents'] or not results['documents'][0]:
             return "Memory not found."
         return results['documents'][0][0]['answer']
         
-    async def store_memory(self, memory: str) -> str:
+    async def store_memory(self, memory: str, guild_id: int) -> str:
         memory = memory + "\nTIMESTAMP: " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         response = await self.client.embeddings(
             model=config('OLLAMA_EMBEDDING_MODEL'),
@@ -83,6 +86,7 @@ class Ollama:
             ids=[uuid.uuid4().hex],
             embeddings=[response.embedding],
             documents=[memory],
+            metadatas=[{"guild_id": guild_id}]
         )
         
         return "Memory stored successfully."
