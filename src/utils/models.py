@@ -15,7 +15,7 @@ class SendMessage(BaseToolArgs):
 class SendVoiceMessage(BaseToolArgs):
     """A tool to send a voice message to the user. You are able to speak using your voice this way. Uses a text-to-speech model to generate the voice message."""
     tool_type: Literal["send_voice_message"]
-    content: str = Field(..., description="Content of the voice message to send. Make it short and concise.")
+    content: str = Field(..., description="Content of the voice message to send. Make it short and concise. No emojis or special characters, as the text-to-speech model may not support them.")
 
 class MemoryInsert(BaseToolArgs):
     """A tool to insert a memory into the vector database. Memories are used to remember important information for later use. Utilize this tool often to remember as much as possible."""
