@@ -9,5 +9,5 @@ class VoiceUtils:
         self.tts = TextToSpeech("NeuML/kokoro-int8-onnx")
 
     async def generate_voice(self, text: str) -> Tuple[torch.Tensor, str]:
-        audio, out_ps = self.tts(text)
+        audio, out_ps = self.tts(text, speaker="af_bella")
         return audio, out_ps

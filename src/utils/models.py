@@ -13,7 +13,7 @@ class SendMessage(BaseToolArgs):
     call_another_tool: bool = Field(..., description="Whether to call another tool after sending this message.")
     
 class SendVoiceMessage(BaseToolArgs):
-    """A tool to send a voice message to the user. You are able to speak using your voice this way."""
+    """A tool to send a voice message to the user. You are able to speak using your voice this way. Uses a text-to-speech model to generate the voice message."""
     tool_type: Literal["send_voice_message"]
     content: str = Field(..., description="Content of the voice message to send. Make it short and concise.")
 
