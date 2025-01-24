@@ -1,5 +1,5 @@
 # Usage
-### *The approximate total system RAM/VRAM you need is <20GB, IF you're using local Ollama. If you use cloud-hosted services or OpenAI API, the RAM/VRAM cost is much lower at <500MB.*
+### *The approximate total system RAM/VRAM you need is <12GB, IF you're using local Ollama. If you use cloud-hosted services or OpenAI API, the RAM/VRAM cost is much lower at <200MB.*
 
 Install requirements:
 
