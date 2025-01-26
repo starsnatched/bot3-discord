@@ -58,18 +58,31 @@ class DiscordUtils:
                 transcription = transcription[:1996].strip() + " ..."
                 
             if message.author.id == self.bot.dev_id:
-                await message.reply(
-                    content=f"-# {transcription}",
-                    file=file,
-                    mention_author=False,
-                    view=ButtonView(reasoning, self.bot.dev_id)
-                )
+                if first:
+                    await message.reply(
+                        content=f"-# {transcription}",
+                        file=file,
+                        mention_author=False,
+                        view=ButtonView(reasoning, self.bot.dev_id)
+                    )
+                else:
+                    await message.channel.send(
+                        f"-# {transcription}",
+                        file=file,
+                        view=ButtonView(reasoning, self.bot.dev_id)
+                    )
             else:
-                await message.reply(
-                    content=f"-# {transcription}",
-                    file=file,
-                    mention_author=False
-                )
+                if first:
+                    await message.reply(
+                        content=f"-# {transcription}",
+                        file=file,
+                        mention_author=False
+                    )
+                else:
+                    await message.channel.send(
+                        f"-# {transcription}",
+                        file=file
+                    )
                 
     @staticmethod
     def create_tool_return_json(tool_type: str, content: Any) -> str:
@@ -88,7 +101,7 @@ class DiscordUtils:
             "content": str(error)
         }, indent=4)
         
-    async def handle_tools(self, message: discord.Message, output: ReasoningModel) -> Optional[str]:
+    async def handle_tools(self, message: discord.Message, output: ReasoningModel, first: bool) -> Optional[str]:
         reasoning_list = [
             f"-# {line.strip()}" 
             for line in output.reasoning.split("\n") 
@@ -107,7 +120,10 @@ class DiscordUtils:
             if message.author.id == self.bot.dev_id:
                 await message.reply(output.tool_args.content, mention_author=False, view=ButtonView(output.reasoning, self.bot.dev_id))
                 return
-            await message.reply(output.tool_args.content, mention_author=False)
+            if first:
+                await message.reply(output.tool_args.content, mention_author=False)
+            else:
+                await message.channel.send(output.tool_args.content)
             return
         
         if output.tool_args.tool_type == "send_voice_message":
@@ -145,16 +161,19 @@ class DiscordUtils:
         if output.tool_args.tool_type == "generate_image":
             if message.author.id == self.bot.dev_id:
                 await message.reply(f"-# Calling tool: {output.tool_args.tool_type}", mention_author=False, view=ButtonView(output.reasoning, self.bot.dev_id))
-            image = await self.img.generate_image(output.tool_args.prompt)
+            image_url = await self.img.generate_image(output.tool_args.prompt)
             
             async with aiohttp.ClientSession() as session:
-                async with session.get(image) as response:
+                async with session.get(image_url) as response:
                     if response.status == 200:
                         image_data = await response.read()
                         image = io.BytesIO(image_data)
                         image.seek(0)
-                        await message.reply(file=discord.File(image, filename="image.png"), mention_author=False)
+                        if first:
+                            await message.reply(file=discord.File(image, filename="image.png"), mention_author=False)
+                        else:
+                            await message.channel.send(file=discord.File(image, filename="image.png"))
                         
-            return self.create_tool_return_json(output.tool_args.tool_type, image)
+            return self.create_tool_return_json(output.tool_args.tool_type, image_url)
         
         return self.create_error_json(output.tool_args.tool_type, Exception("Tool not found."))
