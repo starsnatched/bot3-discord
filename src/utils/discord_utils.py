@@ -130,4 +130,10 @@ class DiscordUtils:
             result = random.randint(1, output.tool_args.sides)
             return self.create_tool_return_json(output.tool_args.tool_type, result)
         
+        if output.tool_args.tool_type == "add_reaction":
+            if message.author.id == self.bot.dev_id:
+                await message.reply(f"-# Calling tool: {output.tool_args.tool_type}", mention_author=False, view=ButtonView(output.reasoning, self.bot.dev_id))
+            await message.add_reaction(output.tool_args.emoji)
+            return self.create_tool_return_json(output.tool_args.tool_type, "Reaction added.")
+        
         return self.create_error_json(output.tool_args.tool_type, Exception("Tool not found."))

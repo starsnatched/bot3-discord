@@ -31,13 +31,19 @@ class DiceRoll(BaseToolArgs):
     """A tool to roll a dice."""
     tool_type: Literal["dice_roll"]
     sides: int = Field(..., description="Number of sides on the dice to roll.")
+    
+class AddReaction(BaseToolArgs):
+    """A tool to add a reaction to the last user message. Use this tool as a way to express emotions or reactions to the user's message."""
+    tool_type: Literal["add_reaction"]
+    emoji: str = Field(..., description="Emoji to react with.")
 
 ToolArgs = Union[
     SendMessage,
     SendVoiceMessage,
     MemoryInsert,
     MemoryRetrieve,
-    DiceRoll
+    DiceRoll,
+    AddReaction
 ]
 
 class ReasoningModel(BaseModel):
@@ -46,7 +52,7 @@ class ReasoningModel(BaseModel):
         description="Detailed and long step-by-step reasoning. Do not include the output here.",
         alias="think"
     )
-    tool_args: Optional[ToolArgs] = Field(
+    tool_args: ToolArgs = Field(
         ...,
         description="For tool calls, choose the appropriate tool and provide the necessary arguments here. If no tool is needed, set this to `null`."
     )
