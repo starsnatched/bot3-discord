@@ -14,6 +14,7 @@ from typing import Optional, Dict
 import json
 import logging
 import asyncio
+import io
 
 class AI(commands.GroupCog, name="ai"):
     def __init__(self, bot: commands.Bot):
@@ -169,7 +170,10 @@ class AI(commands.GroupCog, name="ai"):
                             break
 
                         if return_json:
-                            await self.db.add_message(message.channel.id, "user", return_json, None)
+                            if response.tool_args.tool_type == "generate_image":
+                                await self.db.add_message(message.channel.id, "user", return_json, json.loads(return_json)["content"])
+                            else:
+                                await self.db.add_message(message.channel.id, "user", return_json, None)
                         else:
                             break
                         

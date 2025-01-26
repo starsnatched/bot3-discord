@@ -10,5 +10,7 @@ pynacl
 transformers
 phonemizer
 ollama
+diffusers
+accelerate
 txtai[pipeline]
 git+https://github.com/neuml/txtai.git#egg=txtai

@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 
 from utils.voice_utils import VoiceUtils
+from utils.img_utils import ImgOpenAI, Diffusers
 from utils.models import ReasoningModel
 from utils.discord_model import ButtonView
 from services.infer import OpenAI, Ollama
@@ -20,9 +21,13 @@ class DiscordUtils:
     def __init__(self, bot: commands.Bot):      
         self.voice_client = VoiceUtils()
         self.db = DatabaseService()
+        self.bot = bot
+        if self.bot.backend == 'openai':
+            self.img = ImgOpenAI()
+        elif self.bot.backend == 'ollama':
+            self.img = Diffusers()
             
         self.logger = logging.getLogger(__name__)
-        self.bot = bot
         self._get_client()
         
     def _get_client(self):
@@ -135,5 +140,12 @@ class DiscordUtils:
                 await message.reply(f"-# Calling tool: {output.tool_args.tool_type}", mention_author=False, view=ButtonView(output.reasoning, self.bot.dev_id))
             await message.add_reaction(output.tool_args.emoji)
             return self.create_tool_return_json(output.tool_args.tool_type, "Reaction added.")
+        
+        if output.tool_args.tool_type == "generate_image":
+            if message.author.id == self.bot.dev_id:
+                await message.reply(f"-# Calling tool: {output.tool_args.tool_type}", mention_author=False, view=ButtonView(output.reasoning, self.bot.dev_id))
+            image = await self.img.generate_image(output.tool_args.prompt)
+            await message.reply(f"-# [Generated Image]({image})", mention_author=False)
+            return self.create_tool_return_json(output.tool_args.tool_type, image)
         
         return self.create_error_json(output.tool_args.tool_type, Exception("Tool not found."))

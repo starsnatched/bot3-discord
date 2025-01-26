@@ -36,6 +36,11 @@ class AddReaction(BaseToolArgs):
     """A tool to add a reaction to the last user message. Use this tool as a way to express emotions or reactions to the user's message."""
     tool_type: Literal["add_reaction"]
     emoji: str = Field(..., description="Emoji to react with.")
+    
+class GenerateImage(BaseToolArgs):
+    """A tool to generate an image based on a prompt."""
+    tool_type: Literal["generate_image"]
+    prompt: str = Field(..., description="Prompt to generate the image with.")
 
 ToolArgs = Union[
     SendMessage,
@@ -43,7 +48,8 @@ ToolArgs = Union[
     MemoryInsert,
     MemoryRetrieve,
     DiceRoll,
-    AddReaction
+    AddReaction,
+    GenerateImage,
 ]
 
 class ReasoningModel(BaseModel):
