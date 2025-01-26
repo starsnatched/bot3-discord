@@ -98,7 +98,7 @@ class DiscordUtils:
         if len(output.reasoning) > 2000:
             output.reasoning = output.reasoning[:1996] + " ..."
 
-        if output.tool_args.tool_type in await self.db.get_disabled_tools():
+        if output.tool_args.tool_type in await self.db.get_disabled_tools(message.guild.id):
             return self.create_error_json(output.tool_args.tool_type, Exception("Tool is disabled."))
         
         # Basic tools

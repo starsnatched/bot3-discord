@@ -36,14 +36,14 @@ class AI(commands.GroupCog, name="ai"):
     async def cog_load(self):
         await self.db.init_db()
         
-    async def get_tool_list(self):
-        tools = await get_tool_info(omit_disabled=True)
+    async def get_tool_list(self, guild_id: int) -> list[str]:
+        tools = await get_tool_info(guild_id, omit_disabled=True)
         tools = tools.split("\n")
         tool_list = []
         for tool in tools:
             if tool.startswith("TOOL_TYPE: "):
                 tool_name = tool.replace("TOOL_TYPE: ", "").replace("'", "").strip()
-                if tool_name in await self.db.get_disabled_tools():
+                if tool_name in await self.db.get_disabled_tools(guild_id):
                     tool_list.append(f"{tool_name} (disabled)")
                 else:
                     tool_list.append(tool_name)
@@ -51,7 +51,7 @@ class AI(commands.GroupCog, name="ai"):
         return tool_list
         
     async def tool_autocomplete_enable(self, interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
-        tool_names = await self.get_tool_list()
+        tool_names = await self.get_tool_list(interaction.guild.id)
         
         filtered_tools = [
             tool for tool in tool_names 
@@ -65,7 +65,7 @@ class AI(commands.GroupCog, name="ai"):
         ]
         
     async def tool_autocomplete_disable(self, interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
-        tool_names = await self.get_tool_list()
+        tool_names = await self.get_tool_list(interaction.guild.id)
         
         filtered_tools = [
             tool for tool in tool_names 
@@ -283,7 +283,7 @@ class AI(commands.GroupCog, name="ai"):
     async def tools(self, i: I):
         await i.response.defer()
         
-        tool_list = await self.get_tool_list()
+        tool_list = await self.get_tool_list(i.guild_id)
                         
         tools = "- " + "\n- ".join(tool_list)
         if len(tools) > 2000:
@@ -300,8 +300,8 @@ class AI(commands.GroupCog, name="ai"):
         await i.response.defer()
         
         if i.user.guild_permissions.manage_messages or i.user.id == self.bot.dev_id:
-            if tool in await self.db.get_disabled_tools():
-                await self.db.remove_disabled_tool(tool)
+            if tool in await self.db.get_disabled_tools(i.guild_id):
+                await self.db.remove_disabled_tool(tool, i.guild_id)
                 await i.followup.send(f"-# Tool {tool} enabled.")
             else:
                 await i.followup.send(f"-# Tool {tool} is already enabled.")
@@ -317,10 +317,10 @@ class AI(commands.GroupCog, name="ai"):
             if tool == "send_message":
                 await i.followup.send("-# The send_message tool cannot be disabled.")
                 return
-            if tool in await self.db.get_disabled_tools():
+            if tool in await self.db.get_disabled_tools(i.guild_id):
                 await i.followup.send(f"-# Tool {tool} is already disabled.")
             else:
-                await self.db.add_disabled_tool(tool)
+                await self.db.add_disabled_tool(tool, i.guild_id)
                 await i.followup.send(f"-# Tool {tool} disabled.")
         else:
             await i.followup.send("-# You do not have permission to use this command!")

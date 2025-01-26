@@ -32,6 +32,7 @@ class DisabledChannels(Model):
         database = db
         
 class DisabledTools(Model):
+    guild_id = IntegerField()
     tool_type = CharField()
     
     class Meta:
@@ -73,25 +74,28 @@ class DatabaseService:
             self.logger.error(f"Error updating message in database: {e}")
             raise
             
-    async def get_disabled_tools(self) -> List[str]:
+    async def get_disabled_tools(self, guild_id: int) -> List[str]:
         try:
-            tools = DisabledTools.select()
+            tools = DisabledTools.select().where(DisabledTools.guild_id == guild_id)
             return [tool.tool_type for tool in tools]
         except Exception as e:
             self.logger.error(f"Error retrieving disabled tools: {e}")
             raise
         
-    async def remove_disabled_tool(self, tool_type: str) -> None:
+    async def remove_disabled_tool(self, tool_type: str, guild_id: int) -> None:
         try:
-            query = DisabledTools.delete().where(DisabledTools.tool_type == tool_type)
+            query = DisabledTools.delete().where(
+                (DisabledTools.tool_type == tool_type) & 
+                (DisabledTools.guild_id == guild_id)
+            )
             query.execute()
         except Exception as e:
             self.logger.error(f"Error removing disabled tool from database: {e}")
             raise
         
-    async def add_disabled_tool(self, tool_type: str) -> None:
+    async def add_disabled_tool(self, tool_type: str, guild_id: int) -> None:
         try:
-            DisabledTools.create(tool_type=tool_type)
+            DisabledTools.create(tool_type=tool_type, guild_id=guild_id)
         except Exception as e:
             self.logger.error(f"Error adding disabled tool to database: {e}")
             raise

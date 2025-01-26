@@ -59,12 +59,12 @@ class ToolFormatter:
             
         return self.config.separator.join(sections)
     
-async def get_tool_info(omit_disabled: bool = False) -> str:
+async def get_tool_info(guild_id: int, omit_disabled: bool = False) -> str:
     formatter = ToolFormatter()
     
     if omit_disabled:
         db = DatabaseService()
-        disabled_tools = await db.get_disabled_tools()
+        disabled_tools = await db.get_disabled_tools(guild_id)
         tools_set = {
             obj for name, obj in (
                 inspect.getmembers(sys.modules[__name__]) + inspect.getmembers(models)
