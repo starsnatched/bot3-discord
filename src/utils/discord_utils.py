@@ -39,7 +39,7 @@ class DiscordUtils:
         else:
             raise ValueError("Invalid backend type.")
             
-    async def upload_audio(self, message: discord.Message, audio: Union[torch.Tensor, np.ndarray], transcription: str, reasoning: str, first: bool) -> None:
+    async def upload_audio(self, message: discord.Message, audio: Union[torch.Tensor, np.ndarray], transcription: str, reasoning: str) -> None:
         if isinstance(audio, torch.Tensor):
             audio = audio.cpu().numpy()
         else:
@@ -58,31 +58,18 @@ class DiscordUtils:
                 transcription = transcription[:1996].strip() + " ..."
                 
             if message.author.id == self.bot.dev_id:
-                if first:
-                    await message.reply(
-                        content=f"-# {transcription}",
-                        file=file,
-                        mention_author=False,
-                        view=ButtonView(reasoning, self.bot.dev_id)
-                    )
-                else:
-                    await message.channel.send(
-                        f"-# {transcription}",
-                        file=file,
-                        view=ButtonView(reasoning, self.bot.dev_id)
-                    )
+                await message.reply(
+                    content=f"-# {transcription}",
+                    file=file,
+                    mention_author=False,
+                    view=ButtonView(reasoning, self.bot.dev_id)
+                )
             else:
-                if first:
-                    await message.reply(
-                        content=f"-# {transcription}",
-                        file=file,
-                        mention_author=False
-                    )
-                else:
-                    await message.channel.send(
-                        f"-# {transcription}",
-                        file=file
-                    )
+                await message.reply(
+                    content=f"-# {transcription}",
+                    file=file,
+                    mention_author=False
+                )
                 
     @staticmethod
     def create_tool_return_json(tool_type: str, content: Any) -> str:
@@ -101,7 +88,7 @@ class DiscordUtils:
             "content": str(error)
         }, indent=4)
         
-    async def handle_tools(self, message: discord.Message, output: ReasoningModel, first: bool) -> Optional[str]:
+    async def handle_tools(self, message: discord.Message, output: ReasoningModel) -> Optional[str]:
         reasoning_list = [
             f"-# {line.strip()}" 
             for line in output.reasoning.split("\n") 
@@ -120,10 +107,7 @@ class DiscordUtils:
             if message.author.id == self.bot.dev_id:
                 await message.reply(output.tool_args.content, mention_author=False, view=ButtonView(output.reasoning, self.bot.dev_id))
                 return
-            if first:
-                await message.reply(output.tool_args.content, mention_author=False)
-            else:
-                await message.channel.send(output.tool_args.content)
+            await message.reply(output.tool_args.content, mention_author=False)
             return
         
         if output.tool_args.tool_type == "send_voice_message":
@@ -131,7 +115,7 @@ class DiscordUtils:
             if audio is None:
                 return self.create_error_json(output.tool_args.tool_type, Exception("Failed to generate voice."))
             
-            await self.upload_audio(message, audio, output.tool_args.content, output.reasoning, first)
+            await self.upload_audio(message, audio, output.tool_args.content, output.reasoning)
             return
         
         if output.tool_args.tool_type == "memory_insert":
@@ -169,10 +153,7 @@ class DiscordUtils:
                         image_data = await response.read()
                         image = io.BytesIO(image_data)
                         image.seek(0)
-                        if first:
-                            await message.reply(file=discord.File(image, filename="image.png"), mention_author=False)
-                        else:
-                            await message.channel.send(file=discord.File(image, filename="image.png"))
+                        await message.reply(file=discord.File(image, filename="image.png"), mention_author=False)
                         
             return self.create_tool_return_json(output.tool_args.tool_type, image_url)
         

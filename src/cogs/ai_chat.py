@@ -99,9 +99,9 @@ class AI(commands.GroupCog, name="ai"):
             "content": str(error)
         }, indent=4)
 
-    async def process_ai_response(self, message: discord.Message, response: ReasoningModel, first: bool) -> Optional[str]:
+    async def process_ai_response(self, message: discord.Message, response: ReasoningModel) -> Optional[str]:
         try:
-            return_json = await self.dc_utils.handle_tools(message, response, first)
+            return_json = await self.dc_utils.handle_tools(message, response)
             return return_json
         except Exception as e:
             self.logger.error(f"Error processing AI response: {e}")
@@ -147,17 +147,13 @@ class AI(commands.GroupCog, name="ai"):
 
             async def process_message():
                 try:
-                    first_response = True
                     while True:
                         response = await self.generate_response(message.channel.id, system_prompt)
                         if not response.tool_args:
                             break
                         
-                        return_json = await self.process_ai_response(message, response, first_response)
+                        return_json = await self.process_ai_response(message, response)
                         
-                        if first_response and (response.tool_args.tool_type == "send_message" or response.tool_args.tool_type == "send_voice_message" or response.tool_args.tool_type == "generate_image"):
-                            first_response = False
-
                         del response.reasoning
                         await self.db.add_message(
                             message.channel.id,
