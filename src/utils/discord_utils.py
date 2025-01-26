@@ -145,7 +145,6 @@ class DiscordUtils:
             if message.author.id == self.bot.dev_id:
                 await message.reply(f"-# Calling tool: {output.tool_args.tool_type}", mention_author=False, view=ButtonView(output.reasoning, self.bot.dev_id))
             image = await self.img.generate_image(output.tool_args.prompt)
-            await message.reply(f"-# [Generated Image]({image})", mention_author=False)
             return self.create_tool_return_json(output.tool_args.tool_type, image)
         
         return self.create_error_json(output.tool_args.tool_type, Exception("Tool not found."))

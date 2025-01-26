@@ -38,7 +38,7 @@ class AddReaction(BaseToolArgs):
     emoji: str = Field(..., description="Emoji to react with.")
     
 class GenerateImage(BaseToolArgs):
-    """A tool to generate an image based on a prompt."""
+    """A tool to generate an image based on a prompt. Uses dall-e model to generate the image. After generating the image, you can send it to the user using the `send_message` tool."""
     tool_type: Literal["generate_image"]
     prompt: str = Field(..., description="Prompt to generate the image with.")
 

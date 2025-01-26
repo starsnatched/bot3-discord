@@ -155,6 +155,7 @@ It can currently do:
 - Chain multiple tools/messages.
 - Send a voice message.
 - React to a message.
+- Generate an image (not implemented on Ollama backend yet).
 - Roll a dice!
 
 # [Ollama](https://ollama.com) Usage
