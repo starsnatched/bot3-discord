@@ -39,7 +39,7 @@ class DiscordUtils:
         else:
             raise ValueError("Invalid backend type.")
             
-    async def upload_audio(self, message: discord.Message, audio: Union[torch.Tensor, np.ndarray], transcription: str, reasoning: str) -> None:
+    async def upload_audio(self, message: discord.Message, audio: Union[torch.Tensor, np.ndarray], transcription: str, reasoning: str, first: bool) -> None:
         if isinstance(audio, torch.Tensor):
             audio = audio.cpu().numpy()
         else:
@@ -131,7 +131,7 @@ class DiscordUtils:
             if audio is None:
                 return self.create_error_json(output.tool_args.tool_type, Exception("Failed to generate voice."))
             
-            await self.upload_audio(message, audio, output.tool_args.content, output.reasoning)
+            await self.upload_audio(message, audio, output.tool_args.content, output.reasoning, first)
             return
         
         if output.tool_args.tool_type == "memory_insert":
