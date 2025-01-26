@@ -155,7 +155,7 @@ class AI(commands.GroupCog, name="ai"):
                         
                         return_json = await self.process_ai_response(message, response)
                         
-                        if first_response and response.tool_args.tool_type == "send_message":
+                        if first_response and (response.tool_args.tool_type == "send_message" or response.tool_args.tool_type == "send_voice_message" or response.tool_args.tool_type == "generate_image"):
                             first_response = False
 
                         del response.reasoning
@@ -171,7 +171,14 @@ class AI(commands.GroupCog, name="ai"):
 
                         if return_json:
                             if response.tool_args.tool_type == "generate_image":
-                                await self.db.add_message(message.channel.id, "user", return_json, json.loads(return_json)["content"])
+                                msg_json = json.loads(return_json)
+                                if msg_json['message_type'] == "error_message":
+                                    await self.db.add_message(message.channel.id, "user", return_json, None)
+                                else:
+                                    img_url = msg_json['content'][:]
+                                    msg_json['content'] = "Image generated."
+                                    return_json = json.dumps(msg_json, indent=4)
+                                    await self.db.add_message(message.channel.id, "user", return_json, img_url)
                             else:
                                 await self.db.add_message(message.channel.id, "user", return_json, None)
                         else:

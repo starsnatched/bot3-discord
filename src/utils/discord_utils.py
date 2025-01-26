@@ -16,6 +16,7 @@ from scipy.io import wavfile
 import random
 import torch
 import logging
+import aiohttp
 
 class DiscordUtils:
     def __init__(self, bot: commands.Bot):      
@@ -145,6 +146,15 @@ class DiscordUtils:
             if message.author.id == self.bot.dev_id:
                 await message.reply(f"-# Calling tool: {output.tool_args.tool_type}", mention_author=False, view=ButtonView(output.reasoning, self.bot.dev_id))
             image = await self.img.generate_image(output.tool_args.prompt)
+            
+            async with aiohttp.ClientSession() as session:
+                async with session.get(image) as response:
+                    if response.status == 200:
+                        image_data = await response.read()
+                        image = io.BytesIO(image_data)
+                        image.seek(0)
+                        await message.reply(file=discord.File(image, filename="image.png"), mention_author=False)
+                        
             return self.create_tool_return_json(output.tool_args.tool_type, image)
         
         return self.create_error_json(output.tool_args.tool_type, Exception("Tool not found."))
